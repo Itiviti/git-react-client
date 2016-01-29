@@ -20,8 +20,15 @@ var Grep = React.createClass({
     var arr = this.props.file.split('.');
     var ext = arr[arr.length - 1];
     var lang = `language-${langs[ext] || ext}`;
+    var aStyle = { 'color': '#5050f0'};
     return (
-      <div><a href={this.viewerForRepo()}>{this.props.repo}</a>:<a href={this.viewerForBranch()}>{this.props.branch}</a>:<a href={this.viewerForPath()}>{this.props.file}</a>:<a href={this.viewerForLine()}>{this.props.line_no}</a>:<PrismCode  className={lang}>{this.props.line}</PrismCode></div>
+      <div>
+        <a style={aStyle} href={this.viewerForRepo()}>{this.props.repo}</a>:
+        <a style={aStyle} href={this.viewerForBranch()}>{this.props.branch}</a>:
+        <a style={aStyle} href={this.viewerForPath()}>{this.props.file}</a>:
+        <a style={aStyle} href={this.viewerForLine()}>{this.props.line_no}</a>:
+        <PrismCode  className={lang}>{this.props.line}</PrismCode>
+      </div>
     );
   }
 });
@@ -42,31 +49,8 @@ var GrepBox = React.createClass({
     });
   },
   getInitialState: function() {
-    return {data: []};
-  },
-  render: function() {
-    var grepNodes = this.state.data.map(function(grep) {
-      return (
-      <Grep repo={grep.repo} branch={grep.branch} file={grep.file} line_no={grep.line_no} line={grep.line}/>
-      );
-    });
-    var preStyle = { background: '#272822' };
-    return (
-      <div>
-        <GrepForm onGrepSubmit={this.loadGrepFromServer}/>
-        <pre style={preStyle}>
-        {grepNodes}
-        </pre>
-      </div>
-    );
-  }
-});
-
-
-
-var GrepForm = React.createClass({
-  getInitialState: function() {
-    return {repo: '^ul', text: '', branch: 'HEAD', path: '.'};
+    var query = this.props.location.query || {};
+    return {repo: query.repo || query.project || '^ul', text: query.text || query.grep || '', branch: query.branch || query.ref || 'HEAD', path: query.path || '.', data: []};
   },
   handleRepoChange: function(e) {
     this.setState({repo: e.target.value});
@@ -80,24 +64,35 @@ var GrepForm = React.createClass({
   handlePathChange: function(e) {
     this.setState({path: e.target.value});
   },
-  handleSubmit: function(e) {
-    e.preventDefault();
-    this.props.onGrepSubmit(this.state);
+  componentDidMount: function() {
+    var query = this.props.location.query || {};
+    if (query.submit == 'Grep') {
+      this.loadGrepFromServer(this.state);
+    }
   },
   render: function() {
+    var grepNodes = this.state.data.map(function(grep) {
+      return (
+      <Grep repo={grep.repo} branch={grep.branch} file={grep.file} line_no={grep.line_no} line={grep.line}/>
+      );
+    });
+    var preStyle = { background: '#272822' };
     return (
-      <form className="grepForm" onSubmit={this.handleSubmit}>
-        <input type="search" placeholder="Matching repos (e.g. ul)" value={this.state.repo} onChange={this.handleRepoChange} />
-        <input type="search" placeholder="Search expression" value={this.state.text} onChange={this.handleTextChange} />
-        <input type="search" placeholder="Matching branches (e.g. HEAD)" value={this.state.branch} onChange={this.handleBranchChange} />
-        <input type="search" placeholder="Matching path (e.g. *.java)" value={this.state.path} onChange={this.handlePathChange} />
-        <input type="submit" value="Post" />
+      <div>
+      <form className="grepForm">
+        <input name="repo" type="search" placeholder="Matching repos (e.g. ul)" value={this.state.repo} onChange={this.handleRepoChange} />
+        <input name="text" type="search" placeholder="Search expression" value={this.state.text} onChange={this.handleTextChange} />
+        <input name="branch" type="search" placeholder="Matching branches (e.g. HEAD)" value={this.state.branch} onChange={this.handleBranchChange} />
+        <input name="path" type="search" placeholder="Matching path (e.g. *.java)" value={this.state.path} onChange={this.handlePathChange} />
+        <input name="submit" type="submit" value="Grep" />
       </form>
+        <pre style={preStyle}>
+        {grepNodes}
+        </pre>
+      </div>
     );
   }
-
 });
-
 
 export default GrepBox;  
 

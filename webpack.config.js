@@ -22,6 +22,10 @@ module.exports = {
     },*/
     plugins: [
       new webpack.NoErrorsPlugin()
-    ]
+    ],
+    devServer: {
+          historyApiFallback: true
+    }
+
 
 };
