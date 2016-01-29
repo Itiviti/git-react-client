@@ -17,11 +17,11 @@ pre[class*="language-"] {
 	word-spacing: normal;
 	word-break: normal;
 	word-wrap: normal;
-	line-height: 1.5;
+//FV	line-height: 1.5;
 
-	-moz-tab-size: 4;
-	-o-tab-size: 4;
-	tab-size: 4;
+//FV	-moz-tab-size: 4;
+//FV	-o-tab-size: 4;
+//FV	tab-size: 4;
 
 	-webkit-hyphens: none;
 	-moz-hyphens: none;
@@ -44,9 +44,9 @@ pre[class*="language-"] {
 
 /* Inline code */
 :not(pre) > code[class*="language-"] {
-	padding: .1em;
-	border-radius: .3em;
-	white-space: normal;
+//FV	padding: .1em;
+//FV	border-radius: .3em;
+//FV	white-space: normal;
 }
 
 .token.comment,

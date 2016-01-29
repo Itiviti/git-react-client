@@ -10,14 +10,18 @@ var Grep = React.createClass({
       return `http://git-viewer.ullink.lan/gitweb/?p=${this.props.repo};a=shortlog;h=${this.props.branch};js=1`;
   },
   viewerForPath: function() {
-      return `http://git-viewer.ullink.lan/gitweb/?p=${this.props.repo};a=blob;f=${this.props.path};hb=${this.props.branch};js=1`;
+      return `http://git-viewer.ullink.lan/gitweb/?p=${this.props.repo};a=blob;f=${this.props.file};hb=${this.props.branch};js=1`;
   },
   viewerForLine: function() {
-      return `http://git-viewer.ullink.lan/gitweb/?p=${this.props.repo};a=blob;f=${this.props.path};hb=${this.props.branch};js=1#l${this.props.line_no}`;
+      return `http://git-viewer.ullink.lan/gitweb/?p=${this.props.repo};a=blob;f=${this.props.file};hb=${this.props.branch};js=1#l${this.props.line_no}`;
   },
   render: function() {
+    var langs = { cs: 'csharp', fs: 'fsharp', js: 'javascript', md: 'markdown', pl: 'perl', py: 'python' };
+    var arr = this.props.file.split('.');
+    var ext = arr[arr.length - 1];
+    var lang = `language-${langs[ext] || ext}`;
     return (
-      <div><a href={this.viewerForRepo()}>{this.props.repo}</a>:<a href={this.viewerForBranch()}>{this.props.branch}</a>:<a href={this.viewerForPath()}>{this.props.file}</a>:<a href={this.viewerForLine()}>{this.props.line_no}</a>:<PrismCode  className="language-java">{this.props.line}</PrismCode></div>
+      <div><a href={this.viewerForRepo()}>{this.props.repo}</a>:<a href={this.viewerForBranch()}>{this.props.branch}</a>:<a href={this.viewerForPath()}>{this.props.file}</a>:<a href={this.viewerForLine()}>{this.props.line_no}</a>:<PrismCode  className={lang}>{this.props.line}</PrismCode></div>
     );
   }
 });
@@ -46,10 +50,11 @@ var GrepBox = React.createClass({
       <Grep repo={grep.repo} branch={grep.branch} file={grep.file} line_no={grep.line_no} line={grep.line}/>
       );
     });
+    var preStyle = { background: '#272822' };
     return (
       <div>
         <GrepForm onGrepSubmit={this.loadGrepFromServer}/>
-        <pre>
+        <pre style={preStyle}>
         {grepNodes}
         </pre>
       </div>
