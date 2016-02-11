@@ -1,5 +1,6 @@
-var $ = require('jquery');
 import React from 'react';
+require('../../css/prism.css');
+require('../prism.js');
 import {PrismCode} from "react-prism";
 import Spinner from "react-spinkit";
 require('../../css/components/GitGrep.css');
