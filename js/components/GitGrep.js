@@ -22,13 +22,12 @@ class Grep extends React.Component {
     var arr = this.props.file.split('.');
     var ext = arr[arr.length - 1];
     var lang = `language-${langs[ext] || ext}`;
-    var aStyle = { 'color': '#5050f0'};
     return (
       <div>
-        <a style={aStyle} href={this.viewerForRepo()}>{this.props.repo}</a>:
-        <a style={aStyle} href={this.viewerForBranch()}>{this.props.branch}</a>:
-        <a style={aStyle} href={this.viewerForPath()}>{this.props.file}</a>:
-        <a style={aStyle} href={this.viewerForLine()}>{this.props.line_no}</a>:
+        <a href={this.viewerForRepo()}>{this.props.repo}</a>:
+        <a href={this.viewerForBranch()}>{this.props.branch}</a>:
+        <a href={this.viewerForPath()}>{this.props.file}</a>:
+        <a href={this.viewerForLine()}>{this.props.line_no}</a>:
         <PrismCode className={lang}>{this.props.line}</PrismCode>
       </div>
     );
@@ -43,18 +42,13 @@ class GrepBox extends React.Component {
   }
   loadGrepFromServer(params) {
     this.setState({pending: true});
-    $.ajax({
-      url: `http://git-viewer:1337/repo/${params.repo}/grep/${params.branch}`,
-      data: { q: params.text, path: params.path },
-      dataType: 'json',
-      cache: false,
-      success: (data) => {
-        this.setState({data: data, pending: false});
-      },
-      error: (xhr, status, err) => {
-        console.error(this.props.url, status, err.toString());
-      }
-    });
+    fetch(`http://git-viewer:1337/repo/${params.repo}/grep/${params.branch}?q=${params.text}&path=${params.path}`, { })
+      .then(response => response.json() )
+      .then(json => {
+        this.setState({data: json, pending: false});
+      }).catch(ex => {
+         console.log('parsing failed', ex)
+      });
   }
   handleRepoChange(e) {
     this.setState({repo: e.target.value});
@@ -80,10 +74,9 @@ class GrepBox extends React.Component {
       <Grep repo={grep.repo} branch={grep.branch} file={grep.file} line_no={grep.line_no} line={grep.line}/>
       )
     );
-    var preStyle = { background: '#272822' };
     return (
       <div>
-        <div style={{display: 'flex'}}>
+        <div style={{background: 'white', display: 'flex'}}>
           <form className="grepForm">
             <input name="repo" type="search" placeholder="Matching repos (e.g. ul)" value={this.state.repo} onChange={this.handleRepoChange} />
             <input name="text" type="search" placeholder="Search expression" value={this.state.text} onChange={this.handleTextChange} />
@@ -93,7 +86,7 @@ class GrepBox extends React.Component {
           </form>
           {loading}
         </div>
-        <pre style={preStyle}>
+        <pre>
         {grepNodes}
         </pre>
       </div>

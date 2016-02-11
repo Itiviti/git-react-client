@@ -10,18 +10,13 @@ module.exports = {
     },
     module: {
       loaders: [
-          { test: /\.js$/, exclude: /node_modules/, loader: "babel", query: {presets:['react','es2015']}},
-            { test: /\.css$/, loader: "style!css" }
+        { test: /\.js$/, exclude: /node_modules/, loader: "babel", query: {presets:['react','es2015']}},
+        { test: /\.css$/, loader: "style!css" }
       ]
     },
- /*   module: {
-        loaders: [
-            { test: /\.js?$/, loaders: ['react-hot', 'babel'], exclude: /node_modules/, query: { presets:['es2015','react'] }},
-            { test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader'},
-        ]
-    },*/
     plugins: [
-      new webpack.NoErrorsPlugin()
+      new webpack.NoErrorsPlugin(),
+      new webpack.ProvidePlugin({ 'fetch': 'imports?this=>global!exports?global.fetch!whatwg-fetch' })
     ],
     devServer: {
           historyApiFallback: true
