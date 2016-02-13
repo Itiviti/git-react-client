@@ -2,10 +2,35 @@ import React from 'react';
 import Spinner from "react-spinkit";
 import GrepResult from './GrepResult.js';
 require('../../css/components/GitGrep.css');
+import { browserHistory } from 'react-router'
+
+class Settings extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleClick = this.handleClick.bind(this);
+    this.state = { layout: 'google' };
+  }
+  handleClick() {
+    var layout = this.state.layout == 'google' ? 'compact' : 'google';
+    this.setState({layout: layout});
+    this.props.settingsUpdated(this.state);
+  }
+  render() {
+    return (
+      <p onClick={this.handleClick}>foo</p>
+    );
+  }
+}
 
 class GrepBox extends React.Component {
   constructor(props) {
     super(props);
+    this.handleClick        = this.handleClick.bind(this);
+    this.handleRepoChange   = this.handleRepoChange.bind(this);
+    this.handleTextChange   = this.handleTextChange.bind(this);
+    this.handleBranchChange = this.handleBranchChange.bind(this);
+    this.handlePathChange   = this.handlePathChange.bind(this);
+    this.settingsUpdated    = this.settingsUpdated.bind(this);
     var query = this.props.location.query || {};
     this.state = {repo: query.repo || query.project || '^ul', text: query.text || query.grep || '', branch: query.branch || query.ref || 'HEAD', path: query.path || '.', data: [], pending: false};
   }
@@ -18,6 +43,16 @@ class GrepBox extends React.Component {
       }).catch(ex => {
          console.log('parsing failed', ex)
       });
+  }
+  handleClick(e) {
+    e.preventDefault();
+    this.props.location.query.path = this.state.path;
+    this.props.location.query.text = this.state.text;
+    this.props.location.query.branch = this.state.branch;
+    this.props.location.query.repo = this.state.repo;
+    this.props.location.query.submit = 'Grep';
+    browserHistory.replace(this.props.location);
+    this.loadGrepFromServer(this.state);
   }
   handleRepoChange(e) {
     this.setState({repo: e.target.value});
@@ -37,6 +72,9 @@ class GrepBox extends React.Component {
       this.loadGrepFromServer(this.state);
     }
   }
+  settingsUpdated(settings) {
+    this.setState({layout: settings.layout});
+  }
   render() {
     var loading = this.state.pending ? ( <Spinner spinnerName='circle' noFadeIn /> ) : ( <div/> );
     var grepNodes = this.state.data.map(grep => (
@@ -47,15 +85,16 @@ class GrepBox extends React.Component {
       <div>
         <div style={{background: 'white', display: 'flex'}}>
           <form className="grepForm">
-            <input name="repo" type="search" placeholder="Matching repos (e.g. ul)" value={this.state.repo} onChange={this.handleRepoChange} />
-            <input name="text" type="search" placeholder="Search expression" value={this.state.text} onChange={this.handleTextChange} />
-            <input name="branch" type="search" placeholder="Matching branches (e.g. HEAD)" value={this.state.branch} onChange={this.handleBranchChange} />
-            <input name="path" type="search" placeholder="Matching path (e.g. *.java)" value={this.state.path} onChange={this.handlePathChange} />
-            <input name="submit" type="submit" value="Grep" />
+            <input type="search" placeholder="Matching repos (e.g. ul)" value={this.state.repo} onChange={this.handleRepoChange} />
+            <input type="search" placeholder="Search expression" value={this.state.text} onChange={this.handleTextChange} />
+            <input type="search" placeholder="Matching branches (e.g. HEAD)" value={this.state.branch} onChange={this.handleBranchChange} />
+            <input type="search" placeholder="Matching path (e.g. *.java)" value={this.state.path} onChange={this.handlePathChange} />
+            <button onClick={this.handleClick}>Grep</button>
           </form>
           {loading}
+          <Settings settingsUpdated={this.settingsUpdated}/>
         </div>
-        <pre>
+        <pre className="results">
         {grepNodes}
         </pre>
       </div>

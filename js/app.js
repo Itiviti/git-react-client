@@ -5,13 +5,26 @@ import { Router, Route, Link, browserHistory } from 'react-router'
 import GitGrep from './components/GitGrep.js';
 import GitSearch from './components/GitSearch.js';
 
+var RouteHandler = Router.RouteHandler;
 let App = React.createClass({  
   render() {
     return (
-      <div className="nav">
-        <Link to="/gitgrep">Git Grep</Link> /  <Link to="/gitsearch">Git Search</Link> <br/><br/>
-        {this.props.children}
-      </div>
+         <div className="container-fluid theme-showcase">
+            <nav className="navbar navbar-default">
+                <div className="container">
+                    <div className="navbar-header">
+                        <Link className="navbar-brand" to="app">GIT</Link>
+                    </div>
+                    <div className="navbar-collapse collapse">
+                        <ul className="nav navbar-nav">
+                            <li><Link to="/gitgrep">GIT Grep</Link></li>
+                            <li><Link to="/gitsearch">GIT Search</Link></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+            {this.props.children}
+        </div>
     );
   }
 });

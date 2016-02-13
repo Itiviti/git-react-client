@@ -65,7 +65,7 @@ class SearchBox extends React.Component {
           </form>
           {loading}
         </div>
-        <pre>
+        <pre className="results">
         {grepNodes}
         </pre>
       </div>
