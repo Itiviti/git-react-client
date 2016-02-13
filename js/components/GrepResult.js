@@ -19,9 +19,12 @@ class GrepResult extends React.Component {
   }
   render() {
     var langs = { cs: 'csharp', fs: 'fsharp', js: 'javascript', md: 'markdown', pl: 'perl', py: 'python' };
-    var arr = this.props.file.split('.');
-    var ext = arr[arr.length - 1];
-    var lang = `language-${langs[ext] || ext}`;
+    var lang;
+    if (this.props.file) {
+      var arr = this.props.file.split('.');
+      var ext = arr[arr.length - 1];
+      lang = `language-${langs[ext] || ext}`;
+    }
     return (
       <div>
         <a href={this.viewerForRepo()}>{this.props.repo}</a>:
