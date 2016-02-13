@@ -3,15 +3,29 @@ import Spinner from "react-spinkit";
 import GrepResult from './GrepResult.js';
 require('../../css/components/GitGrep.css');
 
-class GrepBox extends React.Component {
+class SearchBox extends React.Component {
   constructor(props) {
     super(props);
     var query = this.props.location.query || {};
-    this.state = {repo: query.repo || query.project || '^ul', text: query.text || query.grep || '', branch: query.branch || query.ref || 'HEAD', path: query.path || '.', data: [], pending: false};
+    this.state = {repo: query.repo || query.project || '^ul', text: query.text || query.grep || '', branch: query.branch || query.ref || 'HEAD', data: [], pending: false};
   }
   loadGrepFromServer(params) {
     this.setState({pending: true});
-    fetch(`http://git-viewer:1337/repo/${params.repo}/grep/${params.branch}?q=${params.text}&path=${params.path}`, { })
+    // parse text to find line_no and stuff
+    var txt = params.text;
+    var match;
+    var path;
+    var line = 1;
+    // TODO: redirect if one match, plus redirect to MS ref src
+    if (match = txt.match(/([\w\.\d]+):(\d+)/)) {
+      path = `*/${match[1]}`;
+      line = match[2];
+    } else if (match = txt.match(/([^.]+)\.[^.]+\(/)) {
+      path = `*/${match[1]}.*`;
+    } else if (match = txt.match(/(\w+)/)) {
+      path = `*/${match[1]}.*`;
+    }
+    fetch(`http://git-viewer:1337/repo/${params.repo}/grep/${params.branch}?q=.&path=${path}&target_line_no=${line}`, { })
       .then(response => response.json() )
       .then(json => {
         this.setState({data: json, pending: false});
@@ -28,12 +42,9 @@ class GrepBox extends React.Component {
   handleBranchChange(e) {
     this.setState({branch: e.target.value});
   }
-  handlePathChange(e) {
-    this.setState({path: e.target.value});
-  }
   componentDidMount() {
     var query = this.props.location.query || {};
-    if (query.submit == 'Grep') {
+    if (query.submit == 'Search') {
       this.loadGrepFromServer(this.state);
     }
   }
@@ -46,12 +57,11 @@ class GrepBox extends React.Component {
     return (
       <div>
         <div style={{background: 'white', display: 'flex'}}>
-          <form className="grepForm">
+          <form className="searchForm">
             <input name="repo" type="search" placeholder="Matching repos (e.g. ul)" value={this.state.repo} onChange={this.handleRepoChange} />
             <input name="text" type="search" placeholder="Search expression" value={this.state.text} onChange={this.handleTextChange} />
             <input name="branch" type="search" placeholder="Matching branches (e.g. HEAD)" value={this.state.branch} onChange={this.handleBranchChange} />
-            <input name="path" type="search" placeholder="Matching path (e.g. *.java)" value={this.state.path} onChange={this.handlePathChange} />
-            <input name="submit" type="submit" value="Grep" />
+            <input name="submit" type="submit" value="Search" />
           </form>
           {loading}
         </div>
@@ -63,5 +73,5 @@ class GrepBox extends React.Component {
   }
 }
 
-export default GrepBox;  
+export default SearchBox;  
 
