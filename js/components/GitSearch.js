@@ -2,6 +2,7 @@ import React from 'react';
 import Spinner from "react-spinkit";
 import GrepResult from './GrepResult.js';
 require('../../css/components/GitGrep.css');
+import { browserHistory } from 'react-router'
 
 class SearchBox extends React.Component {
   constructor(props) {
