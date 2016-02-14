@@ -1,7 +1,9 @@
+import Rx from 'rx';
 import React from 'react';
 import Spinner from "react-spinkit";
 import GrepResult from './GrepResult.js';
 require('../../css/components/GitGrep.css');
+import { renderNodesForLayout, rxFlow, tranformDataForLayout } from './GitCommon.js';
 import { browserHistory } from 'react-router'
 
 class SearchBox extends React.Component {
@@ -26,13 +28,13 @@ class SearchBox extends React.Component {
     } else if (match = txt.match(/(\w+)/)) {
       path = `*/${match[1]}.*`;
     }
-    fetch(`http://git-viewer:1337/repo/${params.repo}/grep/${params.branch}?q=.&path=${path}&target_line_no=${line}`, { })
-      .then(response => response.json() )
-      .then(json => {
-        this.setState({data: json, pending: false});
-      }).catch(ex => {
+    var rxQty = rxFlow(`http://git-viewer:1337/repo/${params.repo}/grep/${params.branch}?q=.&path=${path}&target_line_no=${line}&delimiter=${'%0A%0A'}`, { withCredentials: false })
+        .bufferWithTimeOrCount(500, 10)
+        .map(elt => this.state.data.concat(elt))
+        .map(orig => ({ orig, data: tranformDataForLayout(orig, this.state.layout) }))
+        .subscribe(this.setState.bind(this), ex => {
          console.log('parsing failed', ex)
-      });
+      }, () => this.setState({pending: false}));
   }
   handleClick(e) {
     e.preventDefault();
@@ -52,10 +54,7 @@ class SearchBox extends React.Component {
   }
   render() {
     var loading = this.state.pending ? ( <Spinner spinnerName='circle' noFadeIn /> ) : ( <div/> );
-    var grepNodes = this.state.data.map(grep => (
-      <GrepResult repo={grep.repo} branch={grep.branch} file={grep.file} line_no={grep.line_no} line={grep.line}/>
-      )
-    );
+    var grepNodes = renderNodesForLayout(this.state.data, this.state.layout);
     return (
       <div>
         <div style={{background: 'white', display: 'flex'}}>

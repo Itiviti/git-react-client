@@ -3,8 +3,8 @@ import Rx from 'rx';
 import Spinner from "react-spinkit";
 import GrepResult from './GrepResult.js';
 require('../../css/components/GitGrep.css');
+import { renderNodesForLayout, rxFlow, tranformDataForLayout } from './GitCommon.js';
 import { browserHistory } from 'react-router'
-import JsonPipe from 'jsonpipe';
 
 class Settings extends React.Component {
   constructor(props) {
@@ -32,34 +32,13 @@ export default class GrepBox extends React.Component {
   loadGrepFromServer(params) {
     this.setState({data: [], pending: true});
     var qry = new Rx.Subject();
-    var rxQty = qry
+    var rxQty = rxFlow(`http://git-viewer:1337/repo/${params.repo}/grep/${params.branch}?q=${params.text}&path=${params.path}&delimiter=${'%0A%0A'}`, { withCredentials: false })
         .bufferWithTimeOrCount(500, 10)
         .map(elt => this.state.data.concat(elt))
-        .map(orig => ({ orig, data: this.origToData(orig) }))
+        .map(orig => ({ orig, data: tranformDataForLayout(orig, this.state.layout) }))
         .subscribe(this.setState.bind(this), ex => {
          console.log('parsing failed', ex)
       }, () => this.setState({pending: false}));
-    JsonPipe.flow(`http://git-viewer:1337/repo/${params.repo}/grep/${params.branch}?q=${params.text}&path=${params.path}&delimiter=${'%0A%0A'}`, {
-            success: qry.onNext.bind(qry),
-            error: qry.onError.bind(qry),
-            complete: qry.onCompleted.bind(qry),
-            withCredentials: false
-            });
-  }
-  origToData(orig, layout) {
-    switch (layout || this.state.layout) {
-      case 'google':
-        var data = new Map();
-        orig.forEach(grep => {
-            var curr = data.get(grep.repo);
-            if (curr) curr.push(grep);
-            else data.set(grep.repo, [ grep ]);
-        });
-        return data;
-      case 'compact':
-      default:
-        return orig;
-    }
   }
   handleClick(e) {
     e.preventDefault();
@@ -80,29 +59,9 @@ export default class GrepBox extends React.Component {
   settingsUpdated(settings) {
     this.setState({layout: settings.layout, data: this.origToData(this.state.orig, settings.layout)});
   }
-  renderNodes() {
-    var data = this.state.data;
-    switch (this.state.layout) {
-      case 'google':
-        var grepNodes = Array.from(data.keys()).map(repo => {
-          return [ (
-                  <h4 className="results">{repo}</h4>
-              //<GrepResult repo={repo} />
-            )].concat(data.get(repo).map(grep => (
-              <GrepResult branch={grep.branch} file={grep.file} line_no={grep.line_no} line={grep.line}/>
-            )));
-          });
-        return [].concat.apply([], grepNodes);
-      case 'compact':
-      default:
-        return data.map(grep => (
-              <GrepResult repo={grep.repo} branch={grep.branch} file={grep.file} line_no={grep.line_no} line={grep.line}/>
-              ));
-    }
-  }
   render() {
     var loading = this.state.pending ? ( <Spinner spinnerName='circle' noFadeIn /> ) : ( <div/> );
-    var grepNodes = this.renderNodes();
+    var grepNodes = renderNodesForLayout(this.state.data, this.state.layout);
     return (
       <div>
         <div style={{background: 'white', display: 'flex'}}>
