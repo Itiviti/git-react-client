@@ -26,8 +26,7 @@ function renderNodesForLayout(data, layout) {
         var headerIdx = 0;
         var grepNodes = Array.from(data.keys()).map(repo => {
           return [ (
-                  <h4 key={'H'+headerIdx++} className="results">{repo}</h4>
-              //<GrepResult repo={repo} />
+              <h4 key={'H'+headerIdx++} className="results">{repo}</h4>
             )].concat(data.get(repo).map(grep => (
               <GrepResult key={idx++} branch={grep.branch} file={grep.file} line_no={grep.line_no} line={grep.line}/>
             )));

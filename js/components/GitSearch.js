@@ -20,7 +20,7 @@ class SearchBox extends React.Component {
     var match;
     var path;
     var line = 1;
-    // TODO: redirect if one match, plus redirect to MS ref src
+    // TODO: redirect to MS ref src
     if (match = txt.match(/([\w\.\d]+):(\d+)/)) {
       path = `*/${match[1]}`;
       line = match[2];
@@ -30,7 +30,7 @@ class SearchBox extends React.Component {
       path = `*/${match[1]}.*`;
     }
     var esc = Rx.Observable.fromEvent(document, 'keydown').filter(e => e.keyCode == 27);
-    var rxQty = rxFlow(`http://git-viewer:1337/repo/${params.repo}/grep/${params.branch}?q=^&path=${path}&target_line_no=${line}&delimiter=${'%0A%0A'}`, { withCredentials: false })
+    var rxQty = rxFlow(`${AppSettings.gitRestApi()}/repo/${params.repo}/grep/${params.branch}?q=^&path=${path}&target_line_no=${line}&delimiter=${'%0A%0A'}`, { withCredentials: false })
         .bufferWithTimeOrCount(500, 10)
         .map(elt => this.state.data.concat(elt))
         .map(orig => ({ orig, data: tranformDataForLayout(orig, this.state.layout) }))

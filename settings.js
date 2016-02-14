@@ -1,4 +1,5 @@
 let settings = {
+  gitRestApi: () => 'http://git-viewer:1337',
   gitViewer: () => new GitwebViewer('http://git-viewer/gitweb')
 }
 

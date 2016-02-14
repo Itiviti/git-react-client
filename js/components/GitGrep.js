@@ -5,6 +5,7 @@ import GrepResult from './GrepResult.js';
 require('../../css/components/GitGrep.css');
 import { renderNodesForLayout, rxFlow, tranformDataForLayout } from './GitCommon.js';
 import { browserHistory } from 'react-router'
+import AppSettings from '../../settings.js';
 
 class Settings extends React.Component {
   constructor(props) {
@@ -33,7 +34,7 @@ export default class GrepBox extends React.Component {
     this.setState({orig: [], data: [], pending: true});
     var qry = new Rx.Subject();
     var esc = Rx.Observable.fromEvent(document, 'keydown').filter(e => e.keyCode == 27);
-    var rxQty = rxFlow(`http://git-viewer:1337/repo/${params.repo}/grep/${params.branch}?q=${params.text}&path=${params.path}&delimiter=${'%0A%0A'}`, { withCredentials: false })
+    var rxQty = rxFlow(`${AppSettings.gitRestApi()}/repo/${params.repo}/grep/${params.branch}?q=${params.text}&path=${params.path}&delimiter=${'%0A%0A'}`, { withCredentials: false })
         .bufferWithTimeOrCount(500, 10)
         .map(elt => this.state.orig.concat(elt))
         .map(orig => ({ orig, data: tranformDataForLayout(orig, this.state.layout) }))
