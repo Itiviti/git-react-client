@@ -19,7 +19,7 @@ class Settings extends React.Component {
   }
   render() {
     return (
-      <div style={{['margin-left']: 'auto'}} >Layout: <a onClick={this.handleClick}>{this.state.layout}</a></div>
+      <div style={{marginLeft: 'auto'}} >Layout: <a onClick={this.handleClick}>{this.state.layout}</a></div>
     );
   }
 }
@@ -33,14 +33,21 @@ export default class GrepBox extends React.Component {
     this.state = {repo: query.repo || query.project || '^ul', text: query.text || query.grep || '', branch: query.branch || query.ref || 'HEAD', path: query.path || '.', data: [], pending: false, layout: 'compact'};
   }
   loadGrepFromServer(params) {
-    this.setState({pending: true});
-    var qry = fetch(`http://git-viewer:1337/repo/${params.repo}/grep/${params.branch}?q=${params.text}&path=${params.path}`, { });
-    var rxQty = Rx.Observable.fromPromise(qry)
-        .flatMap(resp => resp.json())
-        .map(orig => ({ orig, data: this.origToData(orig), pending: false }))
+    this.setState({data: [], pending: true});
+    var qry = new Rx.Subject();
+    var rxQty = qry
+        .bufferWithTimeOrCount(500, 10)
+        .map(elt => this.state.data.concat(elt))
+        .map(orig => ({ orig, data: this.origToData(orig) }))
         .subscribe(this.setState.bind(this), ex => {
          console.log('parsing failed', ex)
-      });
+      }, () => this.setState({pending: false}));
+    JsonPipe.flow(`http://git-viewer:1337/repo/${params.repo}/grep/${params.branch}?q=${params.text}&path=${params.path}&delimiter=${'%0A%0A'}`, {
+            success: qry.onNext.bind(qry),
+            error: qry.onError.bind(qry),
+            complete: qry.onCompleted.bind(qry),
+            withCredentials: false
+            });
   }
   origToData(orig, layout) {
     switch (layout || this.state.layout) {
