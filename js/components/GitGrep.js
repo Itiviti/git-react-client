@@ -6,16 +6,19 @@ require('../../css/components/GitGrep.css');
 import { renderNodesForLayout, rxFlow, tranformDataForLayout } from './GitCommon.js';
 import { browserHistory } from 'react-router'
 import AppSettings from '../../settings.js';
+import Cookie from 'react-cookie';
 
 class Settings extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { layout: 'compact' };
+    this.state = { layout: Cookie.load('layout') || 'compact' };
+    this.props.settingsUpdated(this.state);
   }
   handleClick() {
     var layout = this.state.layout == 'google' ? 'compact' : 'google';
     this.setState({layout: layout});
     this.props.settingsUpdated({layout});
+    Cookie.save('layout', layout);
   }
   render() {
     return (
@@ -28,7 +31,7 @@ export default class GrepBox extends React.Component {
   constructor(props) {
     super(props);
     var query = this.props.location.query || {};
-    this.state = {repo: query.repo || query.project || '^ul', text: query.text || query.grep || '', branch: query.branch || query.ref || 'HEAD', path: query.path || '.', data: [], pending: false, layout: 'compact'};
+    this.state = {orig: [], repo: query.repo || query.project || '^ul', text: query.text || query.grep || '', branch: query.branch || query.ref || 'HEAD', path: query.path || '.', data: [], pending: false, layout: 'compact'};
   }
   loadGrepFromServer(params) {
     this.setState({orig: [], data: [], pending: true});
@@ -59,7 +62,8 @@ export default class GrepBox extends React.Component {
     }
   }
   settingsUpdated(settings) {
-    this.setState({layout: settings.layout, data: tranformDataForLayout(this.state.orig, settings.layout)});
+    if (settings.layout != this.state.layout)
+      this.setState({layout: settings.layout, data: tranformDataForLayout(this.state.orig, settings.layout)});
   }
   render() {
     var loading = this.state.pending ? ( <Spinner spinnerName='circle' noFadeIn /> ) : ( <div/> );
