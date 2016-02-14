@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/Ullink/git-grep-client.svg)](https://travis-ci.org/Ullink/git-grep-client)
+[![Build Status](https://travis-ci.org/Ullink/git-react-client.svg)](https://travis-ci.org/Ullink/git-react-client)
 
-# git-grep-client
-Frontend to git-grep REST API, allows to grep through multiple bare repositories
+# git-react-client
+Frontend to git REST API, allows to grep/search through multiple bare repositories
