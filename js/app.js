@@ -13,7 +13,7 @@ let App = React.createClass({
             <nav className="navbar navbar-default">
                 <div className="container">
                     <div className="navbar-header">
-                        <Link className="navbar-brand" to="app">GIT</Link>
+                        <Link className="navbar-brand" to="/">GIT</Link>
                     </div>
                     <div className="navbar-collapse collapse">
                         <ul className="nav navbar-nav">

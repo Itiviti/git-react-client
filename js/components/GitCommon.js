@@ -20,21 +20,23 @@ function tranformDataForLayout(orig, layout) {
 }
 
 function renderNodesForLayout(data, layout) {
+    var idx = 0;
     switch (layout) {
       case 'google':
+        var headerIdx = 0;
         var grepNodes = Array.from(data.keys()).map(repo => {
           return [ (
-                  <h4 className="results">{repo}</h4>
+                  <h4 key={'H'+headerIdx++} className="results">{repo}</h4>
               //<GrepResult repo={repo} />
             )].concat(data.get(repo).map(grep => (
-              <GrepResult branch={grep.branch} file={grep.file} line_no={grep.line_no} line={grep.line}/>
+              <GrepResult key={idx++} branch={grep.branch} file={grep.file} line_no={grep.line_no} line={grep.line}/>
             )));
           });
         return [].concat.apply([], grepNodes);
       case 'compact':
       default:
         return data.map(grep => (
-              <GrepResult repo={grep.repo} branch={grep.branch} file={grep.file} line_no={grep.line_no} line={grep.line}/>
+              <GrepResult key={idx++} repo={grep.repo} branch={grep.branch} file={grep.file} line_no={grep.line_no} line={grep.line}/>
               ));
     }
 }
