@@ -5,7 +5,8 @@
   "main": "main.js",
   "scripts": {
     "start": "webpack-dev-server --hot --progress --port 8082 --host 0.0.0.0",
-    "build": "webpack --progress"
+    "build": "webpack --progress",
+    "test": "webpack"
   },
   "author": "",
   "license": "ISC",
