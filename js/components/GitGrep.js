@@ -30,15 +30,16 @@ export default class GrepBox extends React.Component {
     this.state = {repo: query.repo || query.project || '^ul', text: query.text || query.grep || '', branch: query.branch || query.ref || 'HEAD', path: query.path || '.', data: [], pending: false, layout: 'compact'};
   }
   loadGrepFromServer(params) {
-    this.setState({data: [], pending: true});
+    this.setState({orig: [], data: [], pending: true});
     var qry = new Rx.Subject();
+    var esc = Rx.Observable.fromEvent(document, 'keydown').filter(e => e.keyCode == 27);
     var rxQty = rxFlow(`http://git-viewer:1337/repo/${params.repo}/grep/${params.branch}?q=${params.text}&path=${params.path}&delimiter=${'%0A%0A'}`, { withCredentials: false })
         .bufferWithTimeOrCount(500, 10)
-        .map(elt => this.state.data.concat(elt))
+        .map(elt => this.state.orig.concat(elt))
         .map(orig => ({ orig, data: tranformDataForLayout(orig, this.state.layout) }))
-        .subscribe(this.setState.bind(this), ex => {
-         console.log('parsing failed', ex)
-      }, () => this.setState({pending: false}));
+        .takeUntil(esc)
+        .finally(() => this.setState({pending: false}))
+        .subscribe(this.setState.bind(this));
   }
   handleClick(e) {
     e.preventDefault();

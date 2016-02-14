@@ -13,7 +13,7 @@ class SearchBox extends React.Component {
     this.state = {repo: query.repo || query.project || '^ul', text: query.text || query.grep || '', branch: query.branch || query.ref || 'HEAD', data: [], pending: false};
   }
   loadGrepFromServer(params) {
-    this.setState({pending: true});
+    this.setState({orig: [], data: [], pending: true});
     // parse text to find line_no and stuff
     var txt = params.text;
     var match;
@@ -28,13 +28,18 @@ class SearchBox extends React.Component {
     } else if (match = txt.match(/(\w+)/)) {
       path = `*/${match[1]}.*`;
     }
-    var rxQty = rxFlow(`http://git-viewer:1337/repo/${params.repo}/grep/${params.branch}?q=.&path=${path}&target_line_no=${line}&delimiter=${'%0A%0A'}`, { withCredentials: false })
+    var esc = Rx.Observable.fromEvent(document, 'keydown').filter(e => e.keyCode == 27);
+    var rxQty = rxFlow(`http://git-viewer:1337/repo/${params.repo}/grep/${params.branch}?q=^&path=${path}&target_line_no=${line}&delimiter=${'%0A%0A'}`, { withCredentials: false })
         .bufferWithTimeOrCount(500, 10)
         .map(elt => this.state.data.concat(elt))
         .map(orig => ({ orig, data: tranformDataForLayout(orig, this.state.layout) }))
-        .subscribe(this.setState.bind(this), ex => {
-         console.log('parsing failed', ex)
-      }, () => this.setState({pending: false}));
+        .doOnCompleted(() => {
+          if (this.state.orig.length == 1)
+              window.location = new GrepResult(this.state.orig[0]).viewerForLine();
+        })
+        .takeUntil(esc)
+        .finally(() => this.setState({pending: false}))
+        .subscribe(this.setState.bind(this));
   }
   handleClick(e) {
     e.preventDefault();
