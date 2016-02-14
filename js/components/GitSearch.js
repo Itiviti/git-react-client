@@ -5,6 +5,7 @@ import GrepResult from './GrepResult.js';
 require('../../css/components/GitGrep.css');
 import { renderNodesForLayout, rxFlow, tranformDataForLayout } from './GitCommon.js';
 import { browserHistory } from 'react-router'
+import AppSettings from '../../settings.js';
 
 class SearchBox extends React.Component {
   constructor(props) {
@@ -35,7 +36,7 @@ class SearchBox extends React.Component {
         .map(orig => ({ orig, data: tranformDataForLayout(orig, this.state.layout) }))
         .doOnCompleted(() => {
           if (this.state.orig.length == 1)
-              window.location = new GrepResult(this.state.orig[0]).viewerForLine();
+              window.location = AppSettings.gitViewer().viewerForLine(this.state.orig[0]);
         })
         .takeUntil(esc)
         .finally(() => this.setState({pending: false}))
