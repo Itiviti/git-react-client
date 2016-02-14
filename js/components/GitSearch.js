@@ -33,14 +33,15 @@ class SearchBox extends React.Component {
          console.log('parsing failed', ex)
       });
   }
-  handleRepoChange(e) {
-    this.setState({repo: e.target.value});
+  handleClick(e) {
+    e.preventDefault();
+    var subState = ({ text, branch, repo}) => ({text, branch, repo, submit: 'Search'});
+    Object.assign(this.props.location.query, subState(this.state));
+    browserHistory.replace(this.props.location);
+    this.loadGrepFromServer(this.state);
   }
-  handleTextChange(e) {
-    this.setState({text: e.target.value});
-  }
-  handleBranchChange(e) {
-    this.setState({branch: e.target.value});
+  handleAnyChange(name, e) {
+    this.setState({[name]: e.target.value});
   }
   componentDidMount() {
     var query = this.props.location.query || {};
@@ -58,10 +59,10 @@ class SearchBox extends React.Component {
       <div>
         <div style={{background: 'white', display: 'flex'}}>
           <form className="searchForm">
-            <input name="repo" type="search" placeholder="Matching repos (e.g. ul)" value={this.state.repo} onChange={this.handleRepoChange} />
-            <input name="text" type="search" placeholder="Search expression" value={this.state.text} onChange={this.handleTextChange} />
-            <input name="branch" type="search" placeholder="Matching branches (e.g. HEAD)" value={this.state.branch} onChange={this.handleBranchChange} />
-            <input name="submit" type="submit" value="Search" />
+            <input name="repo" type="search" placeholder="Matching repos (e.g. ul)" value={this.state.repo} onChange={this.handleAnyChange.bind(this, 'repo')} />
+            <input name="text" type="search" placeholder="Search expression" value={this.state.text} onChange={this.handleAnyChange.bind(this, 'text')} />
+            <input name="branch" type="search" placeholder="Matching branches (e.g. HEAD)" value={this.state.branch} onChange={this.handleAnyChange.bind(this, 'branch')} />
+            <button onClick={this.handleClick.bind(this)}>Search</button>
           </form>
           {loading}
         </div>

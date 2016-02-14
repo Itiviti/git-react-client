@@ -9,7 +9,6 @@ import JsonPipe from 'jsonpipe';
 class Settings extends React.Component {
   constructor(props) {
     super(props);
-    this.handleClick = this.handleClick.bind(this);
     this.state = { layout: 'compact' };
   }
   handleClick() {
@@ -19,7 +18,7 @@ class Settings extends React.Component {
   }
   render() {
     return (
-      <div style={{marginLeft: 'auto'}} >Layout: <a onClick={this.handleClick}>{this.state.layout}</a></div>
+      <div style={{marginLeft: 'auto'}} >Layout: <a onClick={this.handleClick.bind(this)}>{this.state.layout}</a></div>
     );
   }
 }
@@ -27,8 +26,6 @@ class Settings extends React.Component {
 export default class GrepBox extends React.Component {
   constructor(props) {
     super(props);
-    this.handleClick        = this.handleClick.bind(this);
-    this.settingsUpdated    = this.settingsUpdated.bind(this);
     var query = this.props.location.query || {};
     this.state = {repo: query.repo || query.project || '^ul', text: query.text || query.grep || '', branch: query.branch || query.ref || 'HEAD', path: query.path || '.', data: [], pending: false, layout: 'compact'};
   }
@@ -63,7 +60,7 @@ export default class GrepBox extends React.Component {
       default:
         return orig;
     }
- }
+  }
   handleClick(e) {
     e.preventDefault();
     var subState = ({ path, text, branch, repo}) => ({path, text, branch, repo, submit: 'Grep'});
@@ -102,7 +99,7 @@ export default class GrepBox extends React.Component {
               <GrepResult repo={grep.repo} branch={grep.branch} file={grep.file} line_no={grep.line_no} line={grep.line}/>
               ));
     }
-   }
+  }
   render() {
     var loading = this.state.pending ? ( <Spinner spinnerName='circle' noFadeIn /> ) : ( <div/> );
     var grepNodes = this.renderNodes();
@@ -114,10 +111,10 @@ export default class GrepBox extends React.Component {
             <input type="search" placeholder="Search expression" value={this.state.text} onChange={this.handleAnyChange.bind(this, 'text')} />
             <input type="search" placeholder="Matching branches (e.g. HEAD)" value={this.state.branch} onChange={this.handleAnyChange.bind(this, 'branch')} />
             <input type="search" placeholder="Matching path (e.g. *.java)" value={this.state.path} onChange={this.handleAnyChange.bind(this, 'path')} />
-            <button onClick={this.handleClick}>Grep</button>
+            <button onClick={this.handleClick.bind(this)}>Grep</button>
           </form>
           {loading}
-          <Settings settingsUpdated={this.settingsUpdated}/>
+          <Settings settingsUpdated={this.settingsUpdated.bind(this)}/>
         </div>
         <pre className="results">
         {grepNodes}
