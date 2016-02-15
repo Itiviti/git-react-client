@@ -20,7 +20,7 @@ class GrepResult extends React.Component {
     }
     return (
       <div>
-        <a href={this.gitViewer.viewerForRepo(this.props)}>{this.props.repo}</a>:
+        <a href={this.gitViewer.viewerForRepo(this.props)}>{this.props.repo.replace(/\.git$/,'')}</a>:
         <a href={this.gitViewer.viewerForBranch(this.props)}>{this.props.branch}</a>:
         <a href={this.gitViewer.viewerForPath(this.props)}>{this.props.file}</a>:
         <a href={this.gitViewer.viewerForLine(this.props)}>{this.props.line_no}</a>:
