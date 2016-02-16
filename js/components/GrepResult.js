@@ -18,9 +18,10 @@ class GrepResult extends React.Component {
       var ext = arr[arr.length - 1];
       lang = `language-${langs[ext] || ext}`;
     }
+    var repoHeader = ( <a href={this.gitViewer.viewerForRepo(this.props)}>{this.props.repo.replace(/\.git$/,'')}</a> );
     return (
       <div>
-        <a href={this.gitViewer.viewerForRepo(this.props)}>{this.props.repo.replace(/\.git$/,'')}</a>:
+        {this.props.layout == 'google' ? '' : repoHeader}:
         <a href={this.gitViewer.viewerForBranch(this.props)}>{this.props.branch}</a>:
         <a href={this.gitViewer.viewerForPath(this.props)}>{this.props.file}</a>:
         <a href={this.gitViewer.viewerForLine(this.props)}>{this.props.line_no}</a>:
