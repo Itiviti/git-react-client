@@ -11,3 +11,6 @@ Then update `settings.js` with links to your preferred GIT viewer, update also t
 
 And `npm run start` will get you a dev webpack server up and runnig.
 
+## Note
+
+Because of issue [#1122](https://github.com/Reactive-Extensions/RxJS/issues/1122), webpack 2 fails to import rx, and you need (till it gets fixed) to manually modify `node_modules/rx/package.json`, replacing `dist/rx.all.js` by `./dist/rx.all.js`
