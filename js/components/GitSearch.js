@@ -29,8 +29,7 @@ class SearchBox extends React.Component {
 
     if (params.mode == MODE_FILE) {
         paths = [txt, `*/${txt}`]
-    }
-    else {
+    } else {
         var path;
         // TODO: redirect to MS ref src
         if (match = txt.match(/([\w\.\d]+):(\d+)/)) {
@@ -45,7 +44,7 @@ class SearchBox extends React.Component {
     }
 
     var esc = Rx.Observable.fromEvent(document, 'keydown').filter(e => e.keyCode == 27);
-    var paths_query = paths.map(function(p) { return `path=${p}` }).join('&')
+    var paths_query = paths.map(p => `path=${p}`).join('&');
     var rxQty = rxFlow(`${AppSettings.gitRestApi()}/repo/${params.repo}/grep/${params.branch}?q=^&${paths_query}&target_line_no=${line}&delimiter=${'%0A%0A'}`, { withCredentials: false })
         .bufferWithTimeOrCount(500, 10)
         .map(elt => this.state.data.concat(elt))
