@@ -1,7 +1,7 @@
 import React from 'react';
 import Rx from 'rx';
 import Spinner from "react-spinkit";
-import GrepResult from './GrepResult.js';
+import GrepResult from './GrepResult.tsx';
 require('../../css/components/GitGrep.css');
 import { renderNodesForLayout, rxFlow, tranformDataForLayout } from './GitCommon.js';
 import { browserHistory } from 'react-router'
