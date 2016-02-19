@@ -1,16 +1,18 @@
-import Rx from 'rx';
-import React from 'react';
-import JsonPipe from 'jsonpipe';
-import GrepResult from './GrepResult.js';
+/// <reference path="../../typings/tsd.d.ts" />
 
-function tranformDataForLayout(orig, layout) {
+import * as React from 'react'
+import * as JsonPipe from 'jsonpipe'
+import GrepResult from './GrepResult.tsx'
+import {Observable, Subscription, Subscriber} from '@reactivex/rxjs'
+
+function tranformDataForLayout(orig: Array<any>, layout: string): any {
     switch (layout) {
       case 'google':
-        var data = new Map();
+        var data : { [key:string]:Array<{}>; } = {};
         orig.forEach(grep => {
-            var curr = data.get(grep.repo);
+            var curr = data[grep.repo];
             if (curr) curr.push(grep);
-            else data.set(grep.repo, [ grep ]);
+            else data[grep.repo] = [ grep ];
         });
         return data;
       case 'compact':
@@ -19,15 +21,15 @@ function tranformDataForLayout(orig, layout) {
     }
 }
 
-function renderNodesForLayout(data, layout) {
+function renderNodesForLayout(data: any, layout: string) {
     var idx = 0;
     switch (layout) {
       case 'google':
         var headerIdx = 0;
-        var grepNodes = Array.from(data.keys()).map(repo => {
+        var grepNodes = data.map(repo => {
           return [ (
               <h4 key={'H'+headerIdx++} className="results">{repo.replace(/\.git$/,'')}</h4>
-            )].concat(data.get(repo).map(grep => (
+            )].concat(data[repo].map(grep => (
               <GrepResult key={idx++} repo={grep.repo} branch={grep.branch} file={grep.file} line_no={grep.line_no} line={grep.line} layout={layout}/>
             )));
           });
@@ -40,16 +42,17 @@ function renderNodesForLayout(data, layout) {
     }
 }
 
-function rxFlow(url, params) {
-  return Rx.Observable.create(obs => {
+function rxFlow(url: string, params: any): Observable<any> {
+    // TODO pass params
+  return Observable.create((obs: Subscriber<any>) => {
       var xhr = JsonPipe.flow(url,
                 {
-                  success: obs.onNext.bind(obs),
-                  error: obs.onError.bind(obs),
-                  complete: obs.onCompleted.bind(obs),
+                  success: obs.next.bind(obs),
+                  error: obs.error.bind(obs),
+                  complete: obs.complete.bind(obs),
                   withCredentials: false
                 });
-      return Rx.Disposable.create(() => xhr.abort());
+      return new Subscription(() => xhr.abort());
   });
 }
 

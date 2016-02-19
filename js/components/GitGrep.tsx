@@ -1,14 +1,15 @@
-import React from 'react';
-import Rx from 'rx';
-import Spinner from "react-spinkit";
-import GrepResult from './GrepResult.tsx';
-require('../../css/components/GitGrep.css');
-import { renderNodesForLayout, rxFlow, tranformDataForLayout } from './GitCommon.js';
+import * as React from 'react'
+import * as Spinner from 'react-spinkit'
+import GrepResult from './GrepResult.tsx'
+import '../../css/components/GitGrep.css'
+import { renderNodesForLayout, rxFlow, tranformDataForLayout } from './GitCommon.tsx'
 import { browserHistory } from 'react-router'
-import AppSettings from '../../settings.js';
-import Cookie from 'react-cookie';
+import { gitRestApi } from '../../settings.tsx'
+import * as Cookie from 'react-cookie'
+import {Observable, Subscription} from '@reactivex/rxjs'
+import assign = require('object-assign');
 
-class Settings extends React.Component {
+class Settings extends React.Component<{settingsUpdated: (settings: {layout: string}) => void }, {layout: string}> {
   constructor(props) {
     super(props);
     this.state = { layout: Cookie.load('layout') || 'compact' };
@@ -27,7 +28,12 @@ class Settings extends React.Component {
   }
 }
 
-export default class GrepBox extends React.Component {
+interface ObjectConstructor {
+    assign(target: any, ...sources: any[]): any;
+}
+
+
+export default class GrepBox extends React.Component<{location: any}, {orig?: any, data?: any, repo?: string, text?: string, branch?: string, path?: string, layout?: string, pending?: boolean}> {
   constructor(props) {
     super(props);
     var query = this.props.location.query || {};
@@ -35,10 +41,9 @@ export default class GrepBox extends React.Component {
   }
   loadGrepFromServer(params) {
     this.setState({orig: [], data: [], pending: true});
-    var qry = new Rx.Subject();
-    var esc = Rx.Observable.fromEvent(document, 'keydown').filter(e => e.keyCode == 27);
-    var rxQty = rxFlow(`${AppSettings.gitRestApi()}/repo/${params.repo}/grep/${params.branch}?q=${params.text}&path=${params.path}&delimiter=${'%0A%0A'}`, { withCredentials: false })
-        .bufferWithTimeOrCount(500, 10)
+    var esc = Observable.fromEvent<{keyCode: number}>(document, 'keydown').filter(e => e.keyCode == 27);
+    var rxQty = rxFlow(`${gitRestApi()}/repo/${params.repo}/grep/${params.branch}?q=${params.text}&path=${params.path}&delimiter=${'%0A%0A'}`, { withCredentials: false })
+        .bufferTime(500)
         .map(elt => this.state.orig.concat(elt))
         .map(orig => ({ orig, data: tranformDataForLayout(orig, this.state.layout) }))
         .takeUntil(esc)
@@ -47,8 +52,8 @@ export default class GrepBox extends React.Component {
   }
   handleClick(e) {
     e.preventDefault();
-    var subState = ({ path, text, branch, repo}) => ({path, text, branch, repo, submit: 'Grep'});
-    Object.assign(this.props.location.query, subState(this.state));
+    var subState = (state: any) => ({path: state.path, text: state.text, branch: state.branch, repo: state.repo, submit: 'Grep'});
+    assign(this.props.location.query, subState(this.state));
     browserHistory.replace(this.props.location);
     this.loadGrepFromServer(this.state);
   }
@@ -66,7 +71,7 @@ export default class GrepBox extends React.Component {
       this.setState({layout: settings.layout, data: tranformDataForLayout(this.state.orig, settings.layout)});
   }
   render() {
-    var loading = this.state.pending ? ( <Spinner spinnerName='circle' noFadeIn /> ) : ( <div/> );
+    var loading = this.state.pending ? ( <Spinner spinnerName='circle' /* noFadeIn */ /> ) : ( <div/> );
     var grepNodes = renderNodesForLayout(this.state.data, this.state.layout);
     return (
       <div>

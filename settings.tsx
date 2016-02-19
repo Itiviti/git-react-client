@@ -1,11 +1,20 @@
-let settings = {
-  gitRestApi: () => 'http://git-viewer:1337',
-  gitViewer: () => new GitwebViewer('http://git-viewer/gitweb')
+
+export interface GitViewer {
+  viewerForRepo({repo}) : string
+  viewerForBranch({repo, branch}) : string
+  viewerForPath({repo, branch, file}) : string
+  viewerForLine({repo, branch, file, line_no}) : string
 }
 
-export default settings;
+export function gitRestApi() { return 'http://git-viewer:1337' }
+export function gitViewer() { return create('http://git-viewer/gitweb') }
 
-class GitwebViewer {
+function create(baseUrl: string) : GitViewer {
+   return new GitwebViewer(baseUrl);
+} 
+
+class GitwebViewer implements GitViewer {
+  baseUrl : string
   constructor(baseUrl) {
     this.baseUrl = baseUrl;
   }

@@ -1,14 +1,17 @@
-import React from 'react';
-require('../../css/prism.css');
-require('../prism.js');
-import {PrismCode} from "react-prism";
-require('../../css/components/GitGrep.css');
-import AppSettings from '../../settings.js';
+/// <reference path="../../typings/react/react-global.d.ts" />
 
-class GrepResult extends React.Component {
+import * as React from 'react'
+import '../../css/prism.css'
+import '../prism.js'
+import { PrismCode } from 'react-prism'
+import '../../css/components/GitGrep.css'
+import { gitViewer, gitRestApi, GitViewer } from '../../settings.tsx'
+
+export default class GrepResult extends React.Component<{key: any, file: string, repo: string, layout: string, branch: string, line_no: number, line: string}, {}> {
+  gitViewer: GitViewer
   constructor(props) {
     super(props);
-    this.gitViewer = AppSettings.gitViewer();
+    this.gitViewer = gitViewer();
   }
   render() {
     var langs = { cs: 'csharp', fs: 'fsharp', js: 'javascript', md: 'markdown', pl: 'perl', py: 'python' };
@@ -30,6 +33,4 @@ class GrepResult extends React.Component {
     );
   }
 }
-
-export default GrepResult;  
 
