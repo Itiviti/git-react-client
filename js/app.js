@@ -1,6 +1,6 @@
-import React from 'react'
-import { render } from 'react-dom'
-import { Router, Route, Link, browserHistory } from 'react-router'
+import React from 'react';
+import {render} from 'react-dom';
+import {Router, Route, Link, browserHistory} from 'react-router';
 
 import GitGrep from './components/GitGrep.js';
 import GitSearch from './components/GitSearch.js';
@@ -15,8 +15,8 @@ let App = ({children}) =>
         </div>
         <div className="navbar-collapse collapse">
           <ul className="nav navbar-nav">
-            <li><Link to="/gitgrep">GIT Grep</Link></li>
-            <li><Link to="/gitsearch">GIT Search</Link></li>
+            <li><Link to="/gitgrep">Grep</Link></li>
+            <li><Link to="/gitsearch">Search</Link></li>
           </ul>
         </div>
       </div>
@@ -31,5 +31,5 @@ render((
       <Route path="gitsearch" component={GitSearch}/>
     </Route>
   </Router>
-), document.getElementById('bundle'))
+), document.getElementById('bundle'));
 

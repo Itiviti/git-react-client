@@ -2,17 +2,24 @@ import Rx from 'rx';
 import React from 'react';
 import Spinner from "react-spinkit";
 import GrepResult from './GrepResult.js';
-require('../../css/components/GitGrep.css');
-import { renderNodesForLayout, rxFlow, tranformDataForLayout } from './GitCommon.js';
-import { browserHistory } from 'react-router'
+import '../../css/components/GitGrep.css';
+import {renderNodesForLayout, rxFlow, tranformDataForLayout} from './GitCommon.js';
+import {browserHistory} from 'react-router'
 import AppSettings from '../../settings.js';
 
-class SearchBox extends React.Component {
+export default class SearchBox extends React.Component {
   constructor(props) {
     super(props);
     var query = this.props.location.query || {};
-    this.state = {repo: query.repo || query.project || '^ul', text: query.text || query.grep || '', branch: query.branch || query.ref || 'HEAD', data: [], pending: false};
+    this.state = {
+      repo: query.repo || query.project || '^ul',
+      text: query.text || query.grep || '',
+      branch: query.branch || query.ref || 'HEAD',
+      data: [],
+      pending: false
+    };
   }
+
   loadGrepFromServer(params) {
     this.setState({orig: [], data: [], pending: true});
     // parse text to find line_no and stuff
@@ -29,37 +36,47 @@ class SearchBox extends React.Component {
     } else if (match = txt.match(/(\w+)/)) {
       path = `*/${match[1]}.*`;
     }
-    var esc = Rx.Observable.fromEvent(document, 'keydown').filter(e => e.keyCode == 27);
-    var rxQty = rxFlow(`${AppSettings.gitRestApi()}/repo/${params.repo}/grep/${params.branch}?q=^&path=${path}&target_line_no=${line}&delimiter=${'%0A%0A'}`, { withCredentials: false })
-        .bufferWithTimeOrCount(500, 10)
-        .map(elt => this.state.data.concat(elt))
-        .map(orig => ({ orig, data: tranformDataForLayout(orig, this.state.layout) }))
-        .doOnCompleted(() => {
-          if (this.state.orig.length == 1)
-              window.location = AppSettings.gitViewer().viewerForLine(this.state.orig[0]);
-        })
-        .takeUntil(esc)
-        .finally(() => this.setState({pending: false}))
-        .subscribe(this.setState.bind(this));
+    var esc = Rx.Observable.fromEvent(document, 'keydown')
+      .filter(e => e.keyCode === 27);
+    var rxQty = rxFlow(
+        `${AppSettings.gitRestApi()}/repo/${params.repo}/grep/${params.branch}?q=^&path=${path}&target_line_no=${line}&delimiter=${'%0A%0A'}`,
+         {withCredentials: false})
+      .bufferWithTimeOrCount(500, 10)
+      .map(elt => this.state.data.concat(elt))
+      .map(orig => ({orig, data: tranformDataForLayout(orig, this.state.layout)}))
+      .doOnCompleted(() => {
+        if (this.state.orig.length === 1) {
+          window.location = AppSettings.gitViewer().viewerForLine(this.state.orig[0]);
+        }
+      })
+      .takeUntil(esc)
+      .finally(() => this.setState({pending: false}))
+      .subscribe(this.setState.bind(this));
   }
+
   handleClick(e) {
     e.preventDefault();
-    var subState = ({ text, branch, repo}) => ({text, branch, repo, submit: 'Search'});
+    var subState = ({text, branch, repo}) => ({
+        text, branch, repo, submit: 'Search'
+      });
     Object.assign(this.props.location.query, subState(this.state));
     browserHistory.replace(this.props.location);
     this.loadGrepFromServer(this.state);
   }
+
   handleAnyChange(name, e) {
     this.setState({[name]: e.target.value});
   }
+
   componentDidMount() {
     var query = this.props.location.query || {};
-    if (query.submit == 'Search') {
+    if (query.submit === 'Search') {
       this.loadGrepFromServer(this.state);
     }
   }
+
   render() {
-    var loading = this.state.pending ? ( <Spinner spinnerName='circle' noFadeIn /> ) : ( <div/> );
+    var loading = this.state.pending ? <Spinner spinnerName='circle' noFadeIn /> : <div/>;
     var grepNodes = renderNodesForLayout(this.state.data, this.state.layout);
     return (
       <div>
@@ -79,6 +96,3 @@ class SearchBox extends React.Component {
     );
   }
 }
-
-export default SearchBox;  
-
