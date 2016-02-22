@@ -20,7 +20,7 @@ export default class SearchBox extends React.Component {
     };
   }
 
-  loadGrepFromServer(params) {
+  loadGrepFromServer = (params) => {
     this.setState({orig: [], data: [], pending: true});
     // parse text to find line_no and stuff
     var txt = params.text;
@@ -54,7 +54,7 @@ export default class SearchBox extends React.Component {
       .subscribe(this.setState.bind(this));
   }
 
-  handleClick(e) {
+  handleClick = (e) => {
     e.preventDefault();
     var subState = ({text, branch, repo}) => ({
         text, branch, repo, submit: 'Search'
@@ -64,7 +64,7 @@ export default class SearchBox extends React.Component {
     this.loadGrepFromServer(this.state);
   }
 
-  handleAnyChange(name, e) {
+  handleAnyChange = (name, e) => {
     this.setState({[name]: e.target.value});
   }
 
@@ -82,10 +82,10 @@ export default class SearchBox extends React.Component {
       <div>
         <div style={{background: 'white', display: 'flex'}}>
           <form className="searchForm">
-            <input name="repo" type="search" placeholder="Matching repos (e.g. ul)" value={this.state.repo} onChange={this.handleAnyChange.bind(this, 'repo')} />
-            <input name="text" type="search" placeholder="Search expression" value={this.state.text} onChange={this.handleAnyChange.bind(this, 'text')} />
-            <input name="branch" type="search" placeholder="Matching branches (e.g. HEAD)" value={this.state.branch} onChange={this.handleAnyChange.bind(this, 'branch')} />
-            <button onClick={this.handleClick.bind(this)}>Search</button>
+            <input name="repo" type="search" placeholder="Matching repos (e.g. ul)" value={this.state.repo} onChange={this.handleAnyChange.bind(null, 'repo')} />
+            <input name="text" type="search" placeholder="Search expression" value={this.state.text} onChange={this.handleAnyChange.bind(null, 'text')} />
+            <input name="branch" type="search" placeholder="Matching branches (e.g. HEAD)" value={this.state.branch} onChange={this.handleAnyChange.bind(null, 'branch')} />
+            <button onClick={this.handleClick}>Search</button>
           </form>
           {loading}
         </div>

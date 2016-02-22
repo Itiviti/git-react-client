@@ -15,7 +15,7 @@ class Settings extends React.Component {
     this.props.settingsUpdated(this.state);
   }
 
-  handleClick() {
+  handleClick = () => {
     var layout = this.state.layout === 'google' ? 'compact' : 'google';
     this.setState({layout: layout});
     this.props.settingsUpdated({layout});
@@ -25,7 +25,7 @@ class Settings extends React.Component {
   render() {
     return (
       <div style={{marginLeft: 'auto'}}>Layout:
-        <a onClick={this.handleClick.bind(this)}>{this.state.layout}</a>
+        <a onClick={this.handleClick}>{this.state.layout}</a>
       </div>
     );
   }
@@ -47,7 +47,7 @@ export default class GrepBox extends React.Component {
     };
   }
 
-  loadGrepFromServer(params) {
+  loadGrepFromServer = (params) => {
     this.setState({orig: [], data: [], pending: true});
     var qry = new Rx.Subject();
     var esc = Rx.Observable.fromEvent(document, 'keydown')
@@ -63,7 +63,7 @@ export default class GrepBox extends React.Component {
       .subscribe(this.setState.bind(this));
   }
 
-  handleClick(e) {
+  handleClick = (e) => {
     e.preventDefault();
     var subState = ({path, text, branch, repo}) => ({
       path, text, branch, repo, submit: 'Grep'
@@ -73,8 +73,16 @@ export default class GrepBox extends React.Component {
     this.loadGrepFromServer(this.state);
   }
 
-  handleAnyChange(name, e) {
+  handleAnyChange = (name, e) => {
     this.setState({[name]: e.target.value});
+  }
+
+  settingsUpdated = (settings) => {
+    if (settings.layout !== this.state.layout)
+    this.setState({
+      layout: settings.layout,
+      data: tranformDataForLayout(this.state.orig, settings.layout)
+    });
   }
 
   componentDidMount() {
@@ -84,14 +92,6 @@ export default class GrepBox extends React.Component {
     }
   }
 
-  settingsUpdated(settings) {
-    if (settings.layout !== this.state.layout)
-    this.setState({
-      layout: settings.layout,
-      data: tranformDataForLayout(this.state.orig, settings.layout)
-    });
-  }
-
   render() {
     var loading = this.state.pending ? <Spinner spinnerName='circle' noFadeIn /> : <div/>;
     var grepNodes = renderNodesForLayout(this.state.data, this.state.layout);
@@ -99,14 +99,14 @@ export default class GrepBox extends React.Component {
       <div>
         <div style={{background: 'white', display: 'flex'}}>
           <form className="grepForm">
-            <input type="search" placeholder="Matching repos (e.g. ul)" value={this.state.repo} onChange={this.handleAnyChange.bind(this, 'repo')} />
-            <input type="search" placeholder="Search expression" value={this.state.text} onChange={this.handleAnyChange.bind(this, 'text')} />
-            <input type="search" placeholder="Matching branches (e.g. HEAD)" value={this.state.branch} onChange={this.handleAnyChange.bind(this, 'branch')} />
-            <input type="search" placeholder="Matching path (e.g. *.java)" value={this.state.path} onChange={this.handleAnyChange.bind(this, 'path')} />
-            <button onClick={this.handleClick.bind(this)}>Grep</button>
+            <input type="search" placeholder="Matching repos (e.g. ul)" value={this.state.repo} onChange={this.handleAnyChange.bind(null, 'repo')} />
+            <input type="search" placeholder="Search expression" value={this.state.text} onChange={this.handleAnyChange.bind(null, 'text')} />
+            <input type="search" placeholder="Matching branches (e.g. HEAD)" value={this.state.branch} onChange={this.handleAnyChange.bind(null, 'branch')} />
+            <input type="search" placeholder="Matching path (e.g. *.java)" value={this.state.path} onChange={this.handleAnyChange.bind(null, 'path')} />
+            <button onClick={this.handleClick}>Grep</button>
           </form>
           {loading}
-          <Settings settingsUpdated={this.settingsUpdated.bind(this)}/>
+          <Settings settingsUpdated={this.settingsUpdated}/>
         </div>
         <pre className="results">
         {grepNodes}

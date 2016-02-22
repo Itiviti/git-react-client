@@ -5,33 +5,27 @@ import {PrismCode} from 'react-prism';
 import '../../css/components/GitGrep.css';
 import AppSettings from '../../settings.js';
 
-export default class GrepResult extends React.Component {
-  constructor(props) {
-    super(props);
-    this.gitViewer = AppSettings.gitViewer();
+export default (props) => {
+  const gitViewer = AppSettings.gitViewer();
+  const repoHeader = <a href={gitViewer.viewerForRepo(props)}>
+    {props.repo.replace(/\.git$/, '')}
+  </a>;
+
+  if (props.file) {
+    let arr = props.file.split('.');
+    let ext = arr[arr.length - 1];
+    var lang = `language-${langs[ext] || ext}`;
   }
 
-  render() {
-    var lang;
-    if (this.props.file) {
-      let arr = this.props.file.split('.');
-      let ext = arr[arr.length - 1];
-      lang = `language-${langs[ext] || ext}`;
-    }
-    const repoHeader = <a href={this.gitViewer.viewerForRepo(this.props)}>
-      {this.props.repo.replace(/\.git$/,'')}
-    </a>;
-
-    return (
-      <div>
-        {this.props.layout === 'google' ? '' : repoHeader}:
-        <a href={this.gitViewer.viewerForBranch(this.props)}>{this.props.branch}</a>:
-        <a href={this.gitViewer.viewerForPath(this.props)}>{this.props.file}</a>:
-        <a href={this.gitViewer.viewerForLine(this.props)}>{this.props.line_no}</a>:
-        <PrismCode className={lang}>{this.props.line}</PrismCode>
-      </div>
-    );
-  }
+  return (
+    <div>
+      {props.layout === 'google' ? '' : repoHeader}:
+      <a href={gitViewer.viewerForBranch(props)}>{props.branch}</a>:
+      <a href={gitViewer.viewerForPath(props)}>{props.file}</a>:
+      <a href={gitViewer.viewerForLine(props)}>{props.line_no}</a>:
+      <PrismCode className={lang}>{props.line}</PrismCode>
+    </div>
+  );
 }
 
 const langs = {
