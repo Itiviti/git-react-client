@@ -1,3 +1,4 @@
+declare var DEBUG: boolean;
 
 export interface GitViewer {
   viewerForRepo({repo}) : string
@@ -6,6 +7,7 @@ export interface GitViewer {
   viewerForLine({repo, branch, file, line_no}) : string
 }
 
+export function prefix() { return DEBUG ? '/' : '/reactgit/'; }
 export function gitRestApi() { return 'http://git-viewer:1337' }
 export function gitViewer() { return create('http://git-viewer/gitweb') }
 

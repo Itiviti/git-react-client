@@ -1,12 +1,21 @@
-var webpack = require('webpack');  
+var webpack = require('webpack');
+var path = require('path');
+var isProduction = process.env.NODE_ENV === 'production';
+var plugins = [
+      new webpack.NoErrorsPlugin(),
+      new webpack.ProvidePlugin({ 'fetch': 'imports?this=>global!exports?global.fetch!whatwg-fetch' }),
+      new webpack.DefinePlugin({DEBUG: !isProduction})
+    ];
+
+if (!isProduction) plugins.push(new webpack.HotModuleReplacementPlugin());
+
 module.exports = {  
-    entry: [
-      'webpack/hot/only-dev-server',
-      "./js/app.tsx"
-    ],
+    entry: {
+        app: isProduction ? ['./js/app.tsx'] : ['webpack/hot/only-dev-server', './js/app.tsx']
+    },
     output: {
-        path: __dirname + '/build',
-        filename: "bundle.js"
+        path: './reactgit',
+        filename: 'bundle.js'
     },
     resolve: {
       // Add `.ts` and `.tsx` as a resolvable extension.
@@ -19,13 +28,8 @@ module.exports = {
         { test: /\.tsx?$/, loader: 'ts-loader' }
       ]
     },
-    plugins: [
-      new webpack.NoErrorsPlugin(),
-      new webpack.ProvidePlugin({ 'fetch': 'imports?this=>global!exports?global.fetch!whatwg-fetch' })
-    ],
+    plugins: plugins,
     devServer: {
-          historyApiFallback: true
+      historyApiFallback: true
     }
-
-
 };

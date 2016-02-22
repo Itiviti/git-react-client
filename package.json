@@ -2,10 +2,11 @@
   "name": "git-react-client",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "index.html",
   "scripts": {
     "start": "webpack-dev-server --hot --progress --port 8082 --host 0.0.0.0",
     "build": "webpack --progress",
+    "deploy": "NODE_ENV=production webpack -p",
     "test": "webpack"
   },
   "author": "",
