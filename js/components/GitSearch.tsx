@@ -60,7 +60,7 @@ class SearchBox extends React.Component<{location: any}, {repo?: string, text?: 
     }
   }
   render() {
-    var loading = this.state.pending ? ( <Spinner spinnerName='circle' /* noFadeIn */ /> ) : ( <div/> );
+    var loading = this.state.pending ? ( <Spinner spinnerName='circle' noFadeIn /> ) : ( <div/> );
     var grepNodes = renderNodesForLayout(this.state.data, this.state.layout);
     return (
       <div>

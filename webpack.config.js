@@ -14,7 +14,7 @@ module.exports = {
         app: isProduction ? ['./js/app.tsx'] : ['webpack/hot/only-dev-server', './js/app.tsx']
     },
     output: {
-        path: './reactgit',
+        path: './dist',
         filename: 'bundle.js'
     },
     resolve: {

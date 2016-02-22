@@ -71,7 +71,7 @@ export default class GrepBox extends React.Component<{location: any}, {orig?: an
       this.setState({layout: settings.layout, data: tranformDataForLayout(this.state.orig, settings.layout)});
   }
   render() {
-    var loading = this.state.pending ? ( <Spinner spinnerName='circle' /* noFadeIn */ /> ) : ( <div/> );
+    var loading = this.state.pending ? ( <Spinner spinnerName='circle' noFadeIn /> ) : ( <div/> );
     var grepNodes = renderNodesForLayout(this.state.data, this.state.layout);
     return (
       <div>

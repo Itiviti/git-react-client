@@ -14,6 +14,7 @@ declare module "react-spinkit" {
       class Spinner extends Component<{
         spinnerName?: string;
         overrideSpinnerClassName?: string;
+        noFadeIn?: boolean;
       }, {}> { }
     }
 
