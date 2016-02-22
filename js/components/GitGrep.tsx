@@ -23,7 +23,9 @@ class Settings extends React.Component<{settingsUpdated: (settings: {layout: str
   }
   render() {
     return (
-      <div style={{marginLeft: 'auto'}} >Layout: <a onClick={this.handleClick.bind(this)}>{this.state.layout}</a></div>
+      <div style={{marginLeft: 'auto'}} >Layout:
+        <a onClick={this.handleClick.bind(this)}>{this.state.layout}</a>
+      </div>
     );
   }
 }
@@ -71,13 +73,13 @@ export default class GrepBox extends React.Component<{location: any}, {orig?: an
       this.setState({layout: settings.layout, data: tranformDataForLayout(this.state.orig, settings.layout)});
   }
   render() {
-    var loading = this.state.pending ? ( <Spinner spinnerName='circle' noFadeIn /> ) : ( <div/> );
+    var loading = this.state.pending ? <Spinner spinnerName='circle' noFadeIn /> : <div/>;
     var grepNodes = renderNodesForLayout(this.state.data, this.state.layout);
     return (
       <div>
         <div style={{background: 'white', display: 'flex'}}>
           <form className="grepForm">
-            <input type="search" placeholder="Matching repos (e.g. ul)" value={this.state.repo} onChange={this.handleAnyChange.bind(this,'repo')} />
+            <input type="search" placeholder="Matching repos (e.g. ul)" value={this.state.repo} onChange={this.handleAnyChange.bind(this, 'repo')} />
             <input type="search" placeholder="Search expression" value={this.state.text} onChange={this.handleAnyChange.bind(this, 'text')} />
             <input type="search" placeholder="Matching branches (e.g. HEAD)" value={this.state.branch} onChange={this.handleAnyChange.bind(this, 'branch')} />
             <input type="search" placeholder="Matching path (e.g. *.java)" value={this.state.path} onChange={this.handleAnyChange.bind(this, 'path')} />

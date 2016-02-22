@@ -4,8 +4,9 @@ import * as React from 'react'
 import * as JsonPipe from 'jsonpipe'
 import GrepResult from './GrepResult.tsx'
 import {Observable, Subscription, Subscriber} from '@reactivex/rxjs'
+import assign = require('object-assign');
 
-function tranformDataForLayout(orig: Array<any>, layout: string): any {
+export function tranformDataForLayout(orig: Array<any>, layout: string): any {
     switch (layout) {
       case 'google':
         var data : { [key:string]:Array<{}>; } = {};
@@ -21,7 +22,7 @@ function tranformDataForLayout(orig: Array<any>, layout: string): any {
     }
 }
 
-function renderNodesForLayout(data: any, layout: string) {
+export function renderNodesForLayout(data: any, layout: string) {
     var idx = 0;
     switch (layout) {
       case 'google':
@@ -42,19 +43,15 @@ function renderNodesForLayout(data: any, layout: string) {
     }
 }
 
-function rxFlow(url: string, params: any): Observable<any> {
-    // TODO pass params
+export function rxFlow(url: string, params: any): Observable<any> {
   return Observable.create((obs: Subscriber<any>) => {
-      var xhr = JsonPipe.flow(url,
-                {
+      var flowParams = assign({
                   success: obs.next.bind(obs),
                   error: obs.error.bind(obs),
-                  complete: obs.complete.bind(obs),
-                  withCredentials: false
-                });
+                  complete: obs.complete.bind(obs)
+                }, params);
+      var xhr = JsonPipe.flow(url, flowParams);
       return new Subscription(() => xhr.abort());
   });
 }
-
-export { renderNodesForLayout, rxFlow, tranformDataForLayout };
 

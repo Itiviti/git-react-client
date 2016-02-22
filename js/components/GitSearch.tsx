@@ -8,7 +8,7 @@ import { gitViewer, gitRestApi } from '../../settings.tsx'
 import {Observable, Subscription} from '@reactivex/rxjs'
 import assign = require('object-assign');
 
-class SearchBox extends React.Component<{location: any}, {repo?: string, text?: string, branch?: string, data?: any, orig?: any, pending?: boolean, layout?: string}> {
+export default class SearchBox extends React.Component<{location: any}, {repo?: string, text?: string, branch?: string, data?: any, orig?: any, pending?: boolean, layout?: string}> {
   constructor(props) {
     super(props);
     var query = this.props.location.query || {};
@@ -60,7 +60,7 @@ class SearchBox extends React.Component<{location: any}, {repo?: string, text?: 
     }
   }
   render() {
-    var loading = this.state.pending ? ( <Spinner spinnerName='circle' noFadeIn /> ) : ( <div/> );
+    var loading = this.state.pending ? <Spinner spinnerName='circle' noFadeIn /> : <div/>;
     var grepNodes = renderNodesForLayout(this.state.data, this.state.layout);
     return (
       <div>
@@ -80,6 +80,4 @@ class SearchBox extends React.Component<{location: any}, {repo?: string, text?: 
     );
   }
 }
-
-export default SearchBox;  
 

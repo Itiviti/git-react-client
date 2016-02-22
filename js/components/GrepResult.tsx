@@ -14,7 +14,15 @@ export default class GrepResult extends React.Component<{key: any, file: string,
     this.gitViewer = gitViewer();
   }
   render() {
-    var langs = { cs: 'csharp', fs: 'fsharp', js: 'javascript', md: 'markdown', pl: 'perl', py: 'python' };
+    var langs = {
+        cs: 'csharp',
+        fs: 'fsharp',
+        js: 'javascript',
+        md: 'markdown',
+        pl: 'perl',
+        py: 'python',
+        gradle: 'groovy'
+    };
     var lang;
     if (this.props.file) {
       var arr = this.props.file.split('.');
