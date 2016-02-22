@@ -1,11 +1,21 @@
-var webpack = require('webpack');  
+var webpack = require('webpack');
+var path = require('path');
+var isProduction = process.env.NODE_ENV === 'production';
+var plugins = [
+      new webpack.NoErrorsPlugin(),
+      new webpack.ProvidePlugin({ 'fetch': 'imports?this=>global!exports?global.fetch!whatwg-fetch' })
+    ];
+
+if (!isProduction) plugins.push(new webpack.HotModuleReplacementPlugin());
+
+
+
 module.exports = {  
-    entry: [
-      'webpack/hot/only-dev-server',
-      "./js/app.js"
-    ],
+    entry: {
+        app: isProduction ? ['./js/app.js'] : ['webpack/hot/dev-server', './js/app.js']
+    },
     output: {
-        path: __dirname + '/build',
+        path: path.resolve(__dirname, isProduction ? './dist/' : './build'),
         filename: "bundle.js"
     },
     module: {
@@ -14,13 +24,5 @@ module.exports = {
         { test: /\.css$/, loader: "style!css" }
       ]
     },
-    plugins: [
-      new webpack.NoErrorsPlugin(),
-      new webpack.ProvidePlugin({ 'fetch': 'imports?this=>global!exports?global.fetch!whatwg-fetch' })
-    ],
-    devServer: {
-          historyApiFallback: true
-    }
-
-
+    plugins: plugins
 };

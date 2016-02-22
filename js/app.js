@@ -15,8 +15,8 @@ let App = ({children}) =>
         </div>
         <div className="navbar-collapse collapse">
           <ul className="nav navbar-nav">
-            <li><Link to="/gitgrep">GIT Grep</Link></li>
-            <li><Link to="/gitsearch">GIT Search</Link></li>
+            <li><Link to="/reactgit/gitgrep">GIT Grep</Link></li>
+            <li><Link to="/reactgit/gitsearch">GIT Search</Link></li>
           </ul>
         </div>
       </div>
@@ -26,7 +26,7 @@ let App = ({children}) =>
 
 render((
   <Router history={browserHistory}>
-    <Route path="/" component={App}>
+    <Route path="/reactgit/" component={App}>
       <Route path="gitgrep" component={GitGrep}/>
       <Route path="gitsearch" component={GitSearch}/>
     </Route>
