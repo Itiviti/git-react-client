@@ -14,11 +14,11 @@ export default class GrepResult extends React.Component {
   render() {
     var lang;
     if (this.props.file) {
-      var arr = this.props.file.split('.');
-      var ext = arr[arr.length - 1];
+      let arr = this.props.file.split('.');
+      let ext = arr[arr.length - 1];
       lang = `language-${langs[ext] || ext}`;
     }
-    var repoHeader = <a href={this.gitViewer.viewerForRepo(this.props)}>
+    const repoHeader = <a href={this.gitViewer.viewerForRepo(this.props)}>
       {this.props.repo.replace(/\.git$/,'')}
     </a>;
 
@@ -40,5 +40,6 @@ const langs = {
   js: 'javascript',
   md: 'markdown',
   pl: 'perl',
-  py: 'python'
+  py: 'python',
+  gradle: 'groovy'
 };
