@@ -519,11 +519,13 @@ declare namespace __MaterialUI {
         disableSwipeToOpen?: boolean;
         docked?: boolean;
         header?: React.ReactElement<any>;
-        menuItems: Menu.MenuItemRequest[];
+        menuItems?: Menu.MenuItemRequest[];
         onChange?: Menu.ItemTapEventHandler;
         onNavOpen?: () => void;
         onNavClose?: () => void;
+        open?: boolean;
         openRight?: Boolean;
+        onRequestChange?: any
         selectedIndex?: number;
         menuItemClassName?: string;
         menuItemClassNameSubheader?: string;
@@ -785,7 +787,7 @@ declare namespace __MaterialUI {
         displayMember?: string;
         valueMember?: string;
         autoWidth?: boolean;
-        menuItems: Menu.MenuItemRequest[];
+        menuItems?: Menu.MenuItemRequest[];
         menuItemStyle?: React.CSSProperties;
         selectedIndex?: number;
         underlineStyle?: React.CSSProperties;
@@ -795,7 +797,7 @@ declare namespace __MaterialUI {
         style?: React.CSSProperties;
         disabled?: boolean;
         valueLink?: ReactLink<any>;
-        value?: number;
+        value?: any;
 
         onChange?: Menu.ItemTapEventHandler;
         onEnterKeyDown?: React.KeyboardEventHandler;
@@ -1357,6 +1359,7 @@ declare namespace __MaterialUI {
         interface ToolbarGroupProps extends React.Props<ToolbarGroup> {
             float?: string;
             style?: React.CSSProperties;
+            firstChild?: boolean
         }
         export class ToolbarGroup extends React.Component<ToolbarGroupProps, {}> {
         }
