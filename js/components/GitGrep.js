@@ -78,11 +78,12 @@ export default class GrepBox extends React.Component {
   }
 
   settingsUpdated = (settings) => {
-    if (settings.layout !== this.state.layout)
-    this.setState({
-      layout: settings.layout,
-      data: tranformDataForLayout(this.state.orig, settings.layout)
-    });
+    if (settings.layout !== this.state.layout) {
+      this.setState({
+        layout: settings.layout,
+        data: tranformDataForLayout(this.state.orig, settings.layout)
+      });
+    }
   }
 
   componentDidMount() {
