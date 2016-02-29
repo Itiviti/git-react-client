@@ -1,11 +1,17 @@
-a {
-  color: #5050f0;
+a, a:focus, a:hover {
+  color: #2a9fd6
 }
 
 pre.results {
   background: #272822;
+  color: gray;
 }
 
 h4.results {
     color: white;
 }
+
+/* override bootstrap spacing */
+.help { font-size: 0.8em; padding: 0 2px; color: gray }
+.col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4 { padding: 1px }
+.form-control { height: 26px; padding: 2px 8px; }
