@@ -100,7 +100,7 @@ export default class SearchBox extends React.Component<{location: any}, {repo?: 
   }
 
   onSearchOptionsValidate(options) {
-    var subState = (options: any) => ({text: options.text, branch: options.branch, repo: options.repo, submit: 'Search', redirect: options.redirect});
+    var subState = (options: any) => ({text: options.text, branch: options.branch, repo: options.repo, mode: options.mode, submit: 'Search', redirect: options.redirect});
     assign(this.props.location.query, subState(options));
     this.setState(options)
     browserHistory.replace(this.props.location);
