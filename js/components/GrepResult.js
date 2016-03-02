@@ -6,24 +6,48 @@ import '../../css/prism.css';
 import '../../css/components/GitGrep.css';
 
 
-const CodeLineGoogleFormat = (props) => {
+const CodeLineGoogleFormat = ({codes}) => {
   const gitViewer = AppSettings.gitViewer();
-  return <div>
-    <a href={gitViewer.viewerForBranch(props)}>{props.branch}</a>:
-    <a href={gitViewer.viewerForPath(props)}>{props.file}</a>:
-    <a href={gitViewer.viewerForLine(props)}>{props.line_no}</a>:
-    <PrismCode className={determineLang(props.file)}>{props.line}</PrismCode>
+  const groupByReop = new Map();
+  codes.forEach(grep => {
+    const curr = groupByReop.get(grep.repo);
+    if (curr) {
+      curr.push(grep);
+    } else {
+      groupByReop.set(grep.repo, [grep]);
+    }
+  });
+
+  let repoIdx = 0, idx = 0;
+  return <div>{Array.from(groupByReop.keys()).map(repo => (
+    <div key={`r${repoIdx++}`}>
+      <h4 className="results">
+        {repo.replace(/\.git$/,'')}
+      </h4>
+      {groupByReop.get(repo).map(grep => (
+        <div key={idx++}>
+          <a href={gitViewer.viewerForBranch(grep)}>{grep.branch}</a>:
+          <a href={gitViewer.viewerForPath(grep)}>{grep.file}</a>:
+          <a href={gitViewer.viewerForLine(grep)}>{grep.line_no}</a>:
+          <PrismCode className={determineLang(grep.file)}>{grep.line}</PrismCode>
+        </div>
+      ))}
+    </div>))}
   </div>;
 };
 
-const CodeLineCompactFormat = (props) => {
+const CodeLineCompactFormat = ({codes}) => {
   const gitViewer = AppSettings.gitViewer();
+
+  let idx = 0;
   return <div>
-    <a href={gitViewer.viewerForRepo(props)}>{props.repo.replace(/\.git$/, '')}</a>
-    <a href={gitViewer.viewerForBranch(props)}>{props.branch}</a>:
-    <a href={gitViewer.viewerForPath(props)}>{props.file}</a>:
-    <a href={gitViewer.viewerForLine(props)}>{props.line_no}</a>:
-    <PrismCode className={determineLang(props.file)}>{props.line}</PrismCode>
+    {codes.map(grep => <div key={idx++}>
+      <a href={gitViewer.viewerForRepo(grep)}>{grep.repo.replace(/\.git$/, '')}</a>
+      <a href={gitViewer.viewerForBranch(grep)}>{grep.branch}</a>:
+      <a href={gitViewer.viewerForPath(grep)}>{grep.file}</a>:
+      <a href={gitViewer.viewerForLine(grep)}>{grep.line_no}</a>:
+      <PrismCode className={determineLang(grep.file)}>{grep.line}</PrismCode>
+    </div>)}
   </div>;
 };
 
