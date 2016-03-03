@@ -3,7 +3,7 @@ import React from 'react';
 import Spinner from "react-spinkit";
 import GrepResult from './GrepResult.js';
 import '../../css/components/GitGrep.css';
-import {renderNodesForLayout, rxFlow, tranformDataForLayout} from './GitCommon.js';
+import {rxFlow} from './GitCommon.js';
 import {browserHistory} from 'react-router'
 import AppSettings from '../../settings.js';
 
@@ -21,7 +21,7 @@ export default class SearchBox extends React.Component {
   }
 
   loadGrepFromServer = (params) => {
-    this.setState({orig: [], data: [], pending: true});
+    this.setState({data: [], pending: true});
     // parse text to find line_no and stuff
     var txt = params.text;
     var match;
@@ -42,11 +42,10 @@ export default class SearchBox extends React.Component {
         `${AppSettings.gitRestApi()}/repo/${params.repo}/grep/${params.branch}?q=^&path=${path}&target_line_no=${line}&delimiter=${'%0A%0A'}`,
          {withCredentials: false})
       .bufferWithTimeOrCount(500, 10)
-      .map(elt => this.state.data.concat(elt))
-      .map(orig => ({orig, data: tranformDataForLayout(orig, this.state.layout)}))
+      .map(elt => ({data: this.state.data.concat(elt)}))
       .doOnCompleted(() => {
-        if (this.state.orig.length === 1) {
-          window.location = AppSettings.gitViewer().viewerForLine(this.state.orig[0]);
+        if (this.state.data.length === 1) {
+          window.location = AppSettings.gitViewer().viewerForLine(this.state.data[0]);
         }
       })
       .takeUntil(esc)
@@ -77,7 +76,6 @@ export default class SearchBox extends React.Component {
 
   render() {
     var loading = this.state.pending ? <Spinner spinnerName='circle' noFadeIn /> : <div/>;
-    var grepNodes = renderNodesForLayout(this.state.data, this.state.layout);
     return (
       <div>
         <div style={{background: 'white', display: 'flex'}}>
@@ -103,7 +101,7 @@ export default class SearchBox extends React.Component {
           {loading}
         </div>
         <pre className="results">
-        {grepNodes}
+          <GrepResult codes={this.state.data} layout={this.state.layout} />
         </pre>
       </div>
     );

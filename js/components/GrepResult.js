@@ -10,12 +10,9 @@ const CodeLineGoogleFormat = ({codes}) => {
   const gitViewer = AppSettings.gitViewer();
   const groupByReop = new Map();
   codes.forEach(grep => {
-    const curr = groupByReop.get(grep.repo);
-    if (curr) {
-      curr.push(grep);
-    } else {
-      groupByReop.set(grep.repo, [grep]);
-    }
+    const curr = groupByReop.get(grep.repo) || [];
+    curr.push(grep);
+    groupByReop.set(grep.repo, curr);
   });
 
   let repoIdx = 0, idx = 0;

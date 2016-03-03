@@ -1,15 +1,5 @@
 import Rx from 'rx';
-import React from 'react';
 import JsonPipe from 'jsonpipe';
-import GrepResult from './GrepResult.js';
-
-function tranformDataForLayout(orig, layout) {
-  return orig;
-}
-
-function renderNodesForLayout(data, layout) {
-  return <GrepResult codes={data} layout={layout} />;
-}
 
 function rxFlow(url, params) {
   return Rx.Observable.create(obs => {
@@ -23,4 +13,4 @@ function rxFlow(url, params) {
   });
 }
 
-export {renderNodesForLayout, rxFlow, tranformDataForLayout};
+export {rxFlow};
