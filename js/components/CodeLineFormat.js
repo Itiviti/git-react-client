@@ -2,8 +2,6 @@ import React from 'react';
 import {PrismCode} from 'react-prism';
 import AppSettings from '../../settings.js';
 import '../prism.js';
-import '../../css/prism.css';
-import '../../css/components/GitGrep.css';
 
 function CodeLineGoogleFormat({codes}) {
   const gitViewer = AppSettings.gitViewer();

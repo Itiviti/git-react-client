@@ -2,6 +2,7 @@ import Rx from 'rx';
 import React from 'react';
 import Spinner from "react-spinkit";
 import GrepResult from './GrepResult.js';
+import '../../css/prism.css';
 import '../../css/components/GitGrep.css';
 import {rxFlow} from './GitCommon.js';
 import {browserHistory} from 'react-router'
