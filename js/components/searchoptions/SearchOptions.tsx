@@ -35,6 +35,10 @@ export default class SearchOptions extends OptionsBase<{location: any, onValidat
     this.props.onValidate(this.state)
   }
 
+  protected getDialogTitle() {
+    return 'Search parameters';
+  }
+
   protected getPostFields() {
     return <div>
       <SelectField floatingLabelText="Search mode" value={this.state.mode} onChange={this.handleModeChanged.bind(this)}>
