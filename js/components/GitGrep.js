@@ -8,6 +8,7 @@ import {rxFlow} from './GitCommon.js';
 import {browserHistory} from 'react-router'
 import AppSettings from '../../settings.js';
 import Cookie from 'react-cookie';
+import {GitFormInput} from './GitForm.js';
 
 class Settings extends React.Component {
   constructor(props) {
@@ -97,35 +98,21 @@ export default class GrepBox extends React.Component {
     return (
       <div>
         <div style={{background: 'white', display: 'flex'}}>
-          <form className="grepForm">
-            <div className="form-group">
-              <div className="col-sm-3">
-                <input className="form-control" type="search" placeholder="Matching repos (e.g. ul)" value={this.state.repo} onChange={this.handleAnyChange.bind(null, 'repo')} />
-                <div className="help">repo (e.g. ul)</div>
-              </div>
-              <div className="col-sm-2">
-                <input className="form-control" type="search" placeholder="Matching branches (e.g. HEAD)" value={this.state.branch} onChange={this.handleAnyChange.bind(null, 'branch')} />
-                <div className="help">branch (e.g. HEAD)</div>
-              </div>
-              <div className="col-sm-3">
-                <input className="form-control" type="search" placeholder="Matching path (e.g. *.java)" value={this.state.path} onChange={this.handleAnyChange.bind(null, 'path')} />
-                <div className="help">path (e.g. *.java)</div>
-              </div>
-              <div className="col-sm-3">
-                <input className="form-control" type="search" placeholder="Search expression" value={this.state.text} onChange={this.handleAnyChange.bind(null, 'text')} />
-                <div className="help">expression</div>
-              </div>
-              <div className="col-sm-1">
-                <button onClick={this.handleClick}>Go</button>
-              </div>
+          <form className="form-group">
+            <GitFormInput size="3" name="repo" desc="repos (e.g. ul)" value={this.state.repo} onChange={this.handleAnyChange} />
+            <GitFormInput size="2" name="branch" desc="branches (e.g. HEAD)" value={this.state.branch} onChange={this.handleAnyChange} />
+            <GitFormInput size="3" name="path" desc="path (e.g. *.java)" value={this.state.path} onChange={this.handleAnyChange} />
+            <GitFormInput size="3" name="text" desc="search expression" value={this.state.text} onChange={this.handleAnyChange} />
+            <div className="col-sm-1">
+              <button onClick={this.handleClick}>Go</button>
             </div>
           </form>
-          {loading}
           <Settings settingsUpdated={this.settingsUpdated}/>
         </div>
         <pre className="results">
           <GrepResult codes={this.state.data} layout={this.state.layout} />
         </pre>
+        {loading}
       </div>
     );
   }
