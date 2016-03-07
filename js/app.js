@@ -8,7 +8,7 @@ import GitSearch from './components/GitSearch.js';
 var RouteHandler = Router.RouteHandler;
 let App = ({children}) =>
   <div className="container-fluid theme-showcase">
-    <nav className="navbar navbar-default">
+    <nav className="navbar navbar-inverse">
       <div className="container">
         <div className="navbar-header">
           <Link className="navbar-brand" to="/">GIT</Link>
