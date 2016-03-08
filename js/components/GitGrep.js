@@ -89,7 +89,7 @@ export default class GrepBox extends React.Component {
   }
 
   render() {
-    var loading = this.state.pending ? <Spinner spinnerName='circle' noFadeIn /> : <div/>;
+    const loading = this.state.pending ? <Spinner spinnerName='circle' noFadeIn /> : <div/>;
     return (
       <div>
         <div style={{background: 'white', display: 'flex'}}>
@@ -101,9 +101,7 @@ export default class GrepBox extends React.Component {
           </GitForm>
           <Settings settingsUpdated={this.settingsUpdated}/>
         </div>
-        <pre className="results">
-          <GrepResult codes={this.state.data} layout={this.state.layout} />
-        </pre>
+        <GrepResult codes={this.state.data} layout={this.state.layout} />
         {loading}
       </div>
     );

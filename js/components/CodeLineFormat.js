@@ -13,20 +13,18 @@ function CodeLineGoogleFormat({codes}) {
   });
 
   let repoIdx = 0, idx = 0;
-  return <div>{Array.from(groupByReop.keys()).map(repo => (
-    <div key={`r${repoIdx++}`}>
+  return <div>
+    {Array.from(groupByReop.keys()).map(repo => <div key={`r${repoIdx++}`}>
       <h4 className="results">
         {repo.replace(/\.git$/,'')}
       </h4>
-      {groupByReop.get(repo).map(grep => (
-        <div key={idx++}>
-          <a href={gitViewer.viewerForBranch(grep)}>{grep.branch}</a>:
-          <a href={gitViewer.viewerForPath(grep)}>{grep.file}</a>:
-          <a href={gitViewer.viewerForLine(grep)}>{grep.line_no}</a>:
-          <PrismCode className={determineLang(grep.file)}>{grep.line}</PrismCode>
-        </div>
-      ))}
-    </div>))}
+      {groupByReop.get(repo).map(grep => <div key={idx++}>
+        <a href={gitViewer.viewerForBranch(grep)}>{grep.branch}</a>:
+        <a href={gitViewer.viewerForPath(grep)}>{grep.file}</a>:
+        <a href={gitViewer.viewerForLine(grep)}>{grep.line_no}</a>:
+        <PrismCode className={determineLang(grep.file)}>{grep.line}</PrismCode>
+      </div>)}
+    </div>)}
   </div>;
 };
 

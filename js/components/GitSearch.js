@@ -72,7 +72,7 @@ export default class SearchBox extends React.Component {
   }
 
   render() {
-    var loading = this.state.pending ? <Spinner spinnerName='circle' noFadeIn /> : <div/>;
+    const loading = this.state.pending ? <Spinner spinnerName='circle' noFadeIn /> : <div/>;
     return (
       <div>
         <div style={{background: 'white', display: 'flex'}}>
@@ -82,9 +82,7 @@ export default class SearchBox extends React.Component {
             <GitFormInput size="4" name="text" desc="search expression" value={this.state.text} />
           </GitForm>
         </div>
-        <pre className="results">
-          <GrepResult codes={this.state.data} layout={this.state.layout} />
-        </pre>
+        <GrepResult codes={this.state.data} layout={this.state.layout} />
         {loading}
       </div>
     );
