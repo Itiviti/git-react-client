@@ -7,7 +7,7 @@ import '../../css/components/GitGrep.css';
 import {rxFlow} from './GitCommon.js';
 import {browserHistory} from 'react-router'
 import AppSettings from '../../settings.js';
-import {GitFormInput} from './GitForm.js';
+import {GitForm, GitFormInput} from './GitForm.js';
 
 export default class SearchBox extends React.Component {
   constructor(props) {
@@ -55,18 +55,13 @@ export default class SearchBox extends React.Component {
       .subscribe(this.setState.bind(this));
   }
 
-  handleClick = (e) => {
-    e.preventDefault();
+  handleClick = (args) => {
     var subState = ({text, branch, repo}) => ({
         text, branch, repo, submit: 'Search'
       });
-    Object.assign(this.props.location.query, subState(this.state));
+    Object.assign(this.props.location.query, subState(args));
     browserHistory.replace(this.props.location);
     this.loadGrepFromServer(this.state);
-  }
-
-  handleAnyChange = (name, e) => {
-    this.setState({[name]: e.target.value});
   }
 
   componentDidMount() {
@@ -81,14 +76,11 @@ export default class SearchBox extends React.Component {
     return (
       <div>
         <div style={{background: 'white', display: 'flex'}}>
-          <form className="form-group">
-            <GitFormInput size="3" name="repo" desc="repos (e.g. ul)" value={this.state.repo} onChange={this.handleAnyChange} />
-            <GitFormInput size="3" name="branch" desc="branches (e.g. HEAD)" value={this.state.branch} onChange={this.handleAnyChange} />
-            <GitFormInput size="4" name="text" desc="search expression" value={this.state.text} onChange={this.handleAnyChange} />
-            <div className="col-sm-2">
-              <button onClick={this.handleClick}>Go</button>
-            </div>
-          </form>
+          <GitForm onSubmit={this.handleClick}>
+            <GitFormInput size="3" name="repo" desc="repos (e.g. ul)" value={this.state.repo} />
+            <GitFormInput size="3" name="branch" desc="branches (e.g. HEAD)" value={this.state.branch} />
+            <GitFormInput size="4" name="text" desc="search expression" value={this.state.text} />
+          </GitForm>
         </div>
         <pre className="results">
           <GrepResult codes={this.state.data} layout={this.state.layout} />
