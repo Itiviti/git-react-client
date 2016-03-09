@@ -50,12 +50,11 @@ export default class GrepBox extends React.Component {
 
   loadGrepFromServer = (params) => {
     this.setState({data: [], pending: true});
-    var qry = new Rx.Subject();
-    var esc = Rx.Observable.fromEvent(document, 'keydown')
+    const qry = new Rx.Subject();
+    const esc = Rx.Observable.fromEvent(document, 'keydown')
       .filter(e => e.keyCode === 27);
-    var rxQty = rxFlow(
-        `${AppSettings.gitRestApi()}/repo/${params.repo}/grep/${params.branch}?q=${params.text}&path=${params.path}&delimiter=${'%0A%0A'}`,
-        {withCredentials: false})
+    const url = `${AppSettings.gitRestApi()}/repo/${params.repo}/grep/${params.branch}?q=${params.text}&path=${params.path}&delimiter=${'%0A%0A'}`;
+    rxFlow(url, {withCredentials: false})
       .bufferWithTimeOrCount(500, 10)
       .map(elt => ({data: this.state.data.concat(elt)}))
       .takeUntil(esc)
@@ -64,12 +63,13 @@ export default class GrepBox extends React.Component {
   }
 
   handleClick = (args) => {
-    var subState = ({path, text, branch, repo}) => ({
+    const extract = ({path, text, branch, repo}) => ({
       path, text, branch, repo, submit: 'Grep'
     });
-    Object.assign(this.props.location.query, subState(args));
-    browserHistory.replace(this.props.location);
-    this.loadGrepFromServer(this.state);
+    const location = Object.assign({}, this.props.location);
+    location.query = extract(args);
+    browserHistory.replace(location);
+    this.loadGrepFromServer(location.query);
   }
 
   settingsUpdated = (settings) => {

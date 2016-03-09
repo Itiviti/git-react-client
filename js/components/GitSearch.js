@@ -38,11 +38,10 @@ export default class SearchBox extends React.Component {
     } else if (match = txt.match(/(\w+)/)) {
       path = `*/${match[1]}.*`;
     }
-    var esc = Rx.Observable.fromEvent(document, 'keydown')
+    const esc = Rx.Observable.fromEvent(document, 'keydown')
       .filter(e => e.keyCode === 27);
-    var rxQty = rxFlow(
-        `${AppSettings.gitRestApi()}/repo/${params.repo}/grep/${params.branch}?q=^&path=${path}&target_line_no=${line}&delimiter=${'%0A%0A'}`,
-         {withCredentials: false})
+    const url = `${AppSettings.gitRestApi()}/repo/${params.repo}/grep/${params.branch}?q=^&path=${path}&target_line_no=${line}&delimiter=${'%0A%0A'}`;
+    rxFlow(url, {withCredentials: false})
       .bufferWithTimeOrCount(500, 10)
       .map(elt => ({data: this.state.data.concat(elt)}))
       .doOnCompleted(() => {
@@ -56,12 +55,13 @@ export default class SearchBox extends React.Component {
   }
 
   handleClick = (args) => {
-    var subState = ({text, branch, repo}) => ({
+    const extract = ({text, branch, repo}) => ({
         text, branch, repo, submit: 'Search'
       });
-    Object.assign(this.props.location.query, subState(args));
-    browserHistory.replace(this.props.location);
-    this.loadGrepFromServer(this.state);
+    const location = Object.assign({}, this.props.location);
+    location.query = extract(args);
+    browserHistory.replace(location);
+    this.loadGrepFromServer(location.query);
   }
 
   componentDidMount() {
