@@ -14,6 +14,9 @@ h4.results {
 /* override bootstrap spacing */
 .help { font-size: 0.8em; padding: 0 2px; color: gray }
 .navbar { margin-top: -2px }
-.form-group { width: 100%; max-width: 1200px; margin-bottom: 0 }
-.col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4 { padding: 1px }
-.form-control { height: 26px; padding: 2px 8px; }
+#guery-form .form-group { width: 100%; max-width: 1200px; margin-bottom: 0 }
+#guery-form .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4 { padding: 1px }
+.form-control { height: 26px; padding: 2px 8px }
+#settings-panel .control-label { height: 26px; font-weight: normal; padding: 2px 8px !important }
+#settings-panel .form-group { margin-bottom: 4px }
+.popover { width: 400; max-width: 400px  }

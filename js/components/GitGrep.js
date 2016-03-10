@@ -9,29 +9,7 @@ import {browserHistory} from 'react-router'
 import AppSettings from '../../settings.js';
 import Cookie from 'react-cookie';
 import {GitForm, GitFormInput} from './GitForm.js';
-
-class Settings extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {layout: Cookie.load('layout') || 'compact'};
-    this.props.settingsUpdated(this.state);
-  }
-
-  handleClick = () => {
-    var layout = this.state.layout === 'google' ? 'compact' : 'google';
-    this.setState({layout: layout});
-    this.props.settingsUpdated({layout});
-    Cookie.save('layout', layout);
-  }
-
-  render() {
-    return (
-      <div style={{marginLeft: 'auto'}}>Layout:
-        <a onClick={this.handleClick}>{this.state.layout}</a>
-      </div>
-    );
-  }
-}
+import Settings from './GitSettings.js';
 
 export default class GrepBox extends React.Component {
   constructor(props) {

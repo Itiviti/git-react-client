@@ -44,7 +44,7 @@ export class GitForm extends React.Component {
       return React.cloneElement(child, {key: i, ref});
     });
     return (
-      <form className="form-group">
+      <form id="guery-form" className="form-group">
         {children}
         <div className="col-sm-1">
           <button onClick={this.onFormSubmit}>Go</button>
