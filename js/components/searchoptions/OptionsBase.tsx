@@ -7,28 +7,23 @@ import MenuItem = require('material-ui/lib/menus/menu-item')
 import Toggle = require('material-ui/lib/toggle')
 import Dialog = require('material-ui/lib/dialog')
 
-export default class SearchOptions extends React.Component<{location: any, onValidate: any, onRequestClose: any, show: boolean}, {repo?: string, text?: string, branch?: string, mode?: string, redirect?: boolean}> {
+export abstract class OptionsBase<P extends OptionsBaseProperties, S extends OptionsBaseState> extends React.Component<P, S> {
   constructor(props) {
     super(props);
-    var query = this.props.location.query || {};
-    this.state = {
-      repo: query.repo || query.project || '^ul',
-      text: query.text || query.grep || '',
-      branch: query.branch || query.ref || 'HEAD',
-      mode: query.mode || SearchOptions.MODE_FILE,
-      redirect: query.redirect? Boolean(query.redirect) : false,
-    };
   }
 
   public static get MODE_FILE():string { return 'file' }
   public static get MODE_STACK_FRAME():string { return 'stackframe' }
 
-  handleAnyChange(name, e) {
-    this.setState({[name]: e.target.value});
+  initState() {
+    var query = this.props.location.query || {};
+    this.state.repo = query.repo || query.project || '^ul';
+    this.state.text = query.text || query.grep || '';
+    this.state.branch =  query.branch || query.ref || 'HEAD';
   }
 
-  handleModeChanged(event, index, mode) {
-    this.setState({mode});
+  handleAnyChange(name, e) {
+    this.setState({[name]: e.target.value} as S);
   }
 
   handleClick(e) {
@@ -38,19 +33,31 @@ export default class SearchOptions extends React.Component<{location: any, onVal
 
   render() {
     return <div>
-      <Dialog title="Search parameters" open={this.props.show} onRequestClose={this.props.onRequestClose}>
+      <Dialog title={this.getDialogTitle()} open={this.props.show} onRequestClose={this.props.onRequestClose}>
         <form className="searchForm">
           <TextField type="search" floatingLabelText="Matching repos (e.g. ul)" value={this.state.repo} onChange={this.handleAnyChange.bind(this, 'repo')}/><br />
           <TextField type="search" floatingLabelText="Search expression" value={this.state.text} onChange={this.handleAnyChange.bind(this, 'text')}/><br />
           <TextField type="search" floatingLabelText="Matching branches (e.g. HEAD)" value={this.state.branch} onChange={this.handleAnyChange.bind(this, 'branch')}/><br />
-          <SelectField floatingLabelText="Search mode" value={this.state.mode} onChange={this.handleModeChanged.bind(this)}>
-            <MenuItem value={SearchOptions.MODE_FILE} primaryText={SearchOptions.MODE_FILE}/>
-            <MenuItem value={SearchOptions.MODE_STACK_FRAME} primaryText={SearchOptions.MODE_STACK_FRAME}/>
-          </SelectField><br/>
-          <Toggle label="Auto redirect" defaultToggled={this.state.redirect} onToggle={(e, open) => this.setState({redirect: open})}/><br />
+          {this.getPostFields()}
           <RaisedButton type="submit" primary={true} label="Search" onClick={this.handleClick.bind(this)}/>
         </form>
       </Dialog>
     </div>
   }
+
+  protected abstract getPostFields();
+  protected abstract getDialogTitle();
+}
+
+export interface OptionsBaseProperties {
+  location: any;
+  onValidate: any;
+  onRequestClose: any;
+  show: boolean;
+}
+
+export interface OptionsBaseState {
+  repo: string;
+  text: string;
+  branch: string;
 }
