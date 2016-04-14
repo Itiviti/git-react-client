@@ -1,21 +1,15 @@
 import React from 'react';
 import Spinner from 'react-spinkit';
 import Cookie from 'react-cookie';
+import {connect} from 'react-redux';
 import {OverlayTrigger, Popover} from 'react-bootstrap';
 
+@connect(state => ({
+  settings: state.settings
+}), (dispatch) => ({
+  setLayout: (layout) => dispatch({type: 'SET_LAYOUT', layout})
+}))
 export default class Settings extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {layout: Cookie.load('layout') || 'compact'};
-    this.props.settingsUpdated(this.state);
-  }
-
-  setLayout = (layout) => {
-    this.setState({layout: layout});
-    this.props.settingsUpdated({layout});
-    Cookie.save('layout', layout);
-  }
-
   render() {
     const popover = <Popover id="settings-panel" title="Settings">
       <div className="form-horizontal">
@@ -23,8 +17,8 @@ export default class Settings extends React.Component {
           <label className="col-sm-4 control-label">Layout</label>
           <div className="col-sm-8">
             <select className="form-control"
-                value={this.state.layout}
-                onChange={evt=>this.setLayout(evt.target.value)}>
+                value={this.props.settings.layout}
+                onChange={evt=>this.props.setLayout(evt.target.value)}>
               <option value="compact">Compact</option>
               <option value="google">Google</option>
             </select>

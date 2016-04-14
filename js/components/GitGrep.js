@@ -7,7 +7,6 @@ import '../../css/components/GitGrep.css';
 import {rxFlow} from './GitCommon.js';
 import {browserHistory} from 'react-router'
 import AppSettings from '../../settings.js';
-import Cookie from 'react-cookie';
 import {GitForm, GitFormInput} from './GitForm.js';
 import Settings from './GitSettings.js';
 
@@ -50,15 +49,6 @@ export default class GrepBox extends React.Component {
     this.loadGrepFromServer(location.query);
   }
 
-  settingsUpdated = (settings) => {
-    if (settings.layout !== this.state.layout) {
-      this.setState({
-        layout: settings.layout,
-        data: this.state.data
-      });
-    }
-  }
-
   componentDidMount() {
     var query = this.props.location.query || {};
     if (query.submit === 'Grep') {
@@ -77,9 +67,9 @@ export default class GrepBox extends React.Component {
             <GitFormInput size="3" name="path" desc="path (e.g. *.java)" value={this.state.path} />
             <GitFormInput size="3" name="text" desc="search expression" value={this.state.text} />
           </GitForm>
-          <Settings settingsUpdated={this.settingsUpdated}/>
+          <Settings />
         </div>
-        <GrepResult codes={this.state.data} layout={this.state.layout} />
+        <GrepResult codes={this.state.data} />
         {loading}
       </div>
     );

@@ -1,9 +1,11 @@
 import React from 'react';
 import {render} from 'react-dom';
 import {Router, Route, Link, browserHistory} from 'react-router';
+import {Provider} from 'react-redux';
 
 import GitGrep from './components/GitGrep.js';
 import GitSearch from './components/GitSearch.js';
+import createStore from './store/storage';
 
 var RouteHandler = Router.RouteHandler;
 let App = ({children}) =>
@@ -24,12 +26,16 @@ let App = ({children}) =>
     {children}
   </div>;
 
+const store = createStore();
+
 render((
-  <Router history={browserHistory}>
-    <Route path="/" component={App}>
-      <Route path="gitgrep" component={GitGrep}/>
-      <Route path="gitsearch" component={GitSearch}/>
-    </Route>
-  </Router>
+  <Provider store={store}>
+    <Router history={browserHistory}>
+      <Route path="/" component={App}>
+        <Route path="gitgrep" component={GitGrep}/>
+        <Route path="gitsearch" component={GitSearch}/>
+      </Route>
+    </Router>
+  </Provider>
 ), document.getElementById('bundle'));
 

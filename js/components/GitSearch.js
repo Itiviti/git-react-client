@@ -8,6 +8,7 @@ import {rxFlow} from './GitCommon.js';
 import {browserHistory} from 'react-router'
 import AppSettings from '../../settings.js';
 import {GitForm, GitFormInput} from './GitForm.js';
+import Settings from './GitSettings.js';
 
 export default class SearchBox extends React.Component {
   constructor(props) {
@@ -81,6 +82,7 @@ export default class SearchBox extends React.Component {
             <GitFormInput size="3" name="branch" desc="branches (e.g. HEAD)" value={this.state.branch} />
             <GitFormInput size="4" name="text" desc="search expression" value={this.state.text} />
           </GitForm>
+          <Settings />
         </div>
         <GrepResult codes={this.state.data} layout={this.state.layout} />
         {loading}
