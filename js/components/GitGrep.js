@@ -8,7 +8,6 @@ import {rxFlow} from './GitCommon.js';
 import {browserHistory} from 'react-router'
 import AppSettings from '../../settings.js';
 import {GitForm, GitFormInput} from './GitForm.js';
-import Settings from './GitSettings.js';
 
 export default class GrepBox extends React.Component {
   constructor(props) {
@@ -67,7 +66,6 @@ export default class GrepBox extends React.Component {
             <GitFormInput size="3" name="path" desc="path (e.g. *.java)" value={this.state.path} />
             <GitFormInput size="3" name="text" desc="search expression" value={this.state.text} />
           </GitForm>
-          <Settings />
         </div>
         <GrepResult codes={this.state.data} />
         {loading}

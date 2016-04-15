@@ -35,7 +35,7 @@ export default class Settings extends React.Component {
 
     return (
       <OverlayTrigger trigger="click" rootClose placement="bottom" overlay={popover}>
-        <button className="btn btn-default fa fa-cog"></button>
+        <a id="settings-btn" href="#" className="fa fa-cog fa-large"></a>
       </OverlayTrigger>
     );
   }

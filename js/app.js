@@ -6,6 +6,7 @@ import {Provider} from 'react-redux';
 import GitGrep from './components/GitGrep.js';
 import GitSearch from './components/GitSearch.js';
 import createStore from './store/storage';
+import Settings from './components/GitSettings';
 
 var RouteHandler = Router.RouteHandler;
 let App = ({children}) =>
@@ -19,6 +20,9 @@ let App = ({children}) =>
           <ul className="nav navbar-nav">
             <li><Link to="/gitgrep">Grep</Link></li>
             <li><Link to="/gitsearch">Search</Link></li>
+          </ul>
+          <ul className="nav navbar-nav navbar-right">
+            <li><Settings /></li>
           </ul>
         </div>
       </div>
