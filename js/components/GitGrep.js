@@ -8,7 +8,32 @@ import {rxFlow} from './GitCommon.js';
 import {browserHistory} from 'react-router'
 import AppSettings from '../../settings.js';
 import {GitForm, GitFormInput} from './GitForm.js';
+import {connect} from 'react-redux';
 
+const SEARCH_TYPE = 'Grep';
+const PRESSING_ESC = Rx.Observable
+  .fromEvent(document, 'keydown')
+  .filter(e => e.keyCode === 27);
+
+function searchCodeFromServer(query) {
+  return dispatch => {
+    const url = `${AppSettings.gitRestApi()}/repo/${query.repo}/grep/${query.branch}?q=${query.text}&path=${query.path}&delimiter=${'%0A%0A'}`;
+
+    dispatch({type: "SEARCH_CODES", time: Date.now(), query});
+    rxFlow(url, {withCredentials: false})
+      .bufferWithTimeOrCount(500, 10)
+      .map(more => ({type: "RECEIVE_CODES_CHUNK", query, more}))
+      .takeUntil(PRESSING_ESC)
+      .finally(() => dispatch({type: "RECEIVE_CODES_DONE", query}))
+      .subscribe(dispatch);
+  }
+}
+
+@connect(state => ({
+  search: state.search[SEARCH_TYPE]
+}), (dispatch) => ({
+  doSearch: query => dispatch(searchCodeFromServer(query))
+}))
 export default class GrepBox extends React.Component {
   constructor(props) {
     super(props);
@@ -17,46 +42,29 @@ export default class GrepBox extends React.Component {
       repo: query.repo || query.project || '^ul',
       text: query.text || query.grep || '',
       branch: query.branch || query.ref || 'HEAD',
-      path: query.path || '.',
-      data: [],
-      pending: false,
-      layout: 'compact'
+      path: query.path || '.'
     };
-  }
-
-  loadGrepFromServer = (params) => {
-    this.setState({data: [], pending: true});
-    const qry = new Rx.Subject();
-    const esc = Rx.Observable.fromEvent(document, 'keydown')
-      .filter(e => e.keyCode === 27);
-    const url = `${AppSettings.gitRestApi()}/repo/${params.repo}/grep/${params.branch}?q=${params.text}&path=${params.path}&delimiter=${'%0A%0A'}`;
-    rxFlow(url, {withCredentials: false})
-      .bufferWithTimeOrCount(500, 10)
-      .map(elt => ({data: this.state.data.concat(elt)}))
-      .takeUntil(esc)
-      .finally(() => this.setState({pending: false}))
-      .subscribe(this.setState.bind(this));
   }
 
   handleClick = (args) => {
     const extract = ({path, text, branch, repo}) => ({
-      path, text, branch, repo, submit: 'Grep'
+      path, text, branch, repo, submit: SEARCH_TYPE
     });
     const location = Object.assign({}, this.props.location);
     location.query = extract(args);
     browserHistory.replace(location);
-    this.loadGrepFromServer(location.query);
+    this.props.doSearch(location.query);
   }
 
   componentDidMount() {
     var query = this.props.location.query || {};
-    if (query.submit === 'Grep') {
-      this.loadGrepFromServer(this.state);
+    if (query.submit === SEARCH_TYPE) {
+      this.props.doSearch(query);
     }
   }
 
   render() {
-    const loading = this.state.pending ? <Spinner spinnerName='circle' noFadeIn /> : <div/>;
+    const loading = this.props.search.pending ? <Spinner spinnerName='circle' noFadeIn /> : <div/>;
     return (
       <div>
         <div style={{background: 'white', display: 'flex'}}>
@@ -67,7 +75,7 @@ export default class GrepBox extends React.Component {
             <GitFormInput size="3" name="text" desc="search expression" value={this.state.text} />
           </GitForm>
         </div>
-        <GrepResult codes={this.state.data} />
+        <GrepResult codes={this.props.search.data} />
         {loading}
       </div>
     );
