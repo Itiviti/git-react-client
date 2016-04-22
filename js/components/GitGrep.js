@@ -5,7 +5,6 @@ import GrepResult from './GrepResult.js';
 import '../../css/prism.css';
 import '../../css/components/GitGrep.css';
 import {rxFlow} from './GitCommon.js';
-import {browserHistory} from 'react-router'
 import AppSettings from '../../settings.js';
 import {GitForm, GitFormInput} from './GitForm.js';
 import {connect} from 'react-redux';
@@ -46,29 +45,12 @@ export default class GrepBox extends React.Component {
     };
   }
 
-  handleClick = (args) => {
-    const extract = ({path, text, branch, repo}) => ({
-      path, text, branch, repo, submit: SEARCH_TYPE
-    });
-    const location = Object.assign({}, this.props.location);
-    location.query = extract(args);
-    browserHistory.replace(location);
-    this.props.doSearch(location.query);
-  }
-
-  componentDidMount() {
-    var query = this.props.location.query || {};
-    if (query.submit === SEARCH_TYPE) {
-      this.props.doSearch(query);
-    }
-  }
-
   render() {
     const loading = this.props.search.pending ? <Spinner spinnerName='circle' noFadeIn /> : <div/>;
     return (
       <div>
         <div style={{background: 'white', display: 'flex'}}>
-          <GitForm onSubmit={this.handleClick}>
+          <GitForm doSearch={this.props.doSearch} location={this.props.location} type={SEARCH_TYPE}>
             <GitFormInput size="3" name="repo" desc="repos (e.g. ul)" value={this.state.repo} />
             <GitFormInput size="2" name="branch" desc="branches (e.g. HEAD)" value={this.state.branch} />
             <GitFormInput size="3" name="path" desc="path (e.g. *.java)" value={this.state.path} />

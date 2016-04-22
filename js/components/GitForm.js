@@ -1,5 +1,6 @@
 import React from 'react';
 import AppSettings from '../../settings.js';
+import {browserHistory} from 'react-router';
 
 export class GitFormInput extends React.Component {
   constructor(props) {
@@ -30,12 +31,24 @@ export class GitFormInput extends React.Component {
 export class GitForm extends React.Component {
   onFormSubmit = (event) => {
     event.preventDefault();
-    const args = {};
+    const query = {};
     for (let ref in this.refs) {
       const {key, value} = this.refs[ref].state;
-      args[key] = value;
+      query[key] = value;
     }
-    this.props.onSubmit(args);
+    query.submit = this.props.type
+
+    const location = Object.assign({}, this.props.location, {query});
+    browserHistory.replace(location);
+    this.props.doSearch(query);
+  }
+
+
+  componentDidMount() {
+    var query = this.props.location.query || {};
+    if (query.submit === this.props.type) {
+      this.props.doSearch(query);
+    }
   }
 
   render() {
@@ -44,7 +57,7 @@ export class GitForm extends React.Component {
       return React.cloneElement(child, {key: i, ref});
     });
     return (
-      <form id="guery-form" className="form-group">
+      <form id="query-form" className="form-group">
         {children}
         <div className="col-sm-1">
           <button onClick={this.onFormSubmit}>Go</button>
