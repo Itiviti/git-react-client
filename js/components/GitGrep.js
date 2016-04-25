@@ -4,34 +4,20 @@ import Spinner from 'react-spinkit';
 import GrepResult from './GrepResult.js';
 import '../../css/prism.css';
 import '../../css/components/GitGrep.css';
-import {rxFlow} from './GitCommon.js';
+import {searchCodes} from '../actions/search';
 import AppSettings from '../../settings.js';
 import {GitForm, GitFormInput} from './GitForm.js';
 import {connect} from 'react-redux';
 
 const SEARCH_TYPE = 'Grep';
-const PRESSING_ESC = Rx.Observable
-  .fromEvent(document, 'keydown')
-  .filter(e => e.keyCode === 27);
-
-function searchCodeFromServer(query) {
-  return dispatch => {
-    const url = `${AppSettings.gitRestApi()}/repo/${query.repo}/grep/${query.branch}?q=${query.text}&path=${query.path}&delimiter=${'%0A%0A'}`;
-
-    dispatch({type: "SEARCH_CODES", time: Date.now(), query});
-    rxFlow(url, {withCredentials: false})
-      .bufferWithTimeOrCount(500, 10)
-      .map(more => ({type: "RECEIVE_CODES_CHUNK", query, more}))
-      .takeUntil(PRESSING_ESC)
-      .finally(() => dispatch({type: "RECEIVE_CODES_DONE", query}))
-      .subscribe(dispatch);
-  }
-}
 
 @connect(state => ({
   search: state.search[SEARCH_TYPE]
 }), (dispatch) => ({
-  doSearch: query => dispatch(searchCodeFromServer(query))
+  doSearch: query => {
+    const url = `${AppSettings.gitRestApi()}/repo/${query.repo}/grep/${query.branch}?q=${query.text}&path=${query.path}&delimiter=${'%0A%0A'}`;
+    dispatch(searchCodes(query, url))
+  }
 }))
 export default class GrepBox extends React.Component {
   constructor(props) {
