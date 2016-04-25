@@ -43,7 +43,6 @@ export class GitForm extends React.Component {
     this.props.doSearch(query);
   }
 
-
   componentDidMount() {
     var query = this.props.location.query || {};
     if (query.submit === this.props.type) {
@@ -54,7 +53,8 @@ export class GitForm extends React.Component {
   render() {
     const children = this.props.children.map((child, i) => {
       const ref = child.props.name;
-      return React.cloneElement(child, {key: i, ref});
+      const value = this.props.search.query[ref] || child.props.init;
+      return React.cloneElement(child, {key: i, ref, value});
     });
     return (
       <form id="query-form" className="form-group">

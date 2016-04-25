@@ -12,7 +12,7 @@ import {connect} from 'react-redux';
 const SEARCH_TYPE = 'Grep';
 
 @connect(state => ({
-  search: state.search[SEARCH_TYPE]
+  search: state.search[SEARCH_TYPE] || {}
 }), (dispatch) => ({
   doSearch: query => {
     const url = `${AppSettings.gitRestApi()}/repo/${query.repo}/grep/${query.branch}?q=${query.text}&path=${query.path}&delimiter=${'%0A%0A'}`;
@@ -20,27 +20,16 @@ const SEARCH_TYPE = 'Grep';
   }
 }))
 export default class GrepBox extends React.Component {
-  constructor(props) {
-    super(props);
-    var query = this.props.location.query || {};
-    this.state = {
-      repo: query.repo || query.project || '^ul',
-      text: query.text || query.grep || '',
-      branch: query.branch || query.ref || 'HEAD',
-      path: query.path || '.'
-    };
-  }
-
   render() {
     const loading = this.props.search.pending ? <Spinner spinnerName='circle' noFadeIn /> : <div/>;
     return (
       <div>
         <div style={{background: 'white', display: 'flex'}}>
-          <GitForm doSearch={this.props.doSearch} location={this.props.location} type={SEARCH_TYPE}>
-            <GitFormInput size="3" name="repo" desc="repos (e.g. ul)" value={this.state.repo} />
-            <GitFormInput size="2" name="branch" desc="branches (e.g. HEAD)" value={this.state.branch} />
-            <GitFormInput size="3" name="path" desc="path (e.g. *.java)" value={this.state.path} />
-            <GitFormInput size="3" name="text" desc="search expression" value={this.state.text} />
+          <GitForm {...this.props} type={SEARCH_TYPE}>
+            <GitFormInput size="3" name="repo" desc="repos (e.g. ul)" init="^ul" />
+            <GitFormInput size="2" name="branch" desc="branches (e.g. HEAD)" init="HEAD" />
+            <GitFormInput size="3" name="path" desc="path (e.g. *.java)" init="." />
+            <GitFormInput size="3" name="text" desc="search expression" init="" />
           </GitForm>
         </div>
         <GrepResult codes={this.props.search.data} />
