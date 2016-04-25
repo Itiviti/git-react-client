@@ -9,28 +9,19 @@ import AppSettings from '../../settings.js';
 import {GitForm, GitFormInput} from './GitForm.js';
 import {connect} from 'react-redux';
 
-const SEARCH_TYPE = 'Search';
+const SEARCH_TYPE = 'stackframe';
 
 @connect(state => ({
-  search: state.search[SEARCH_TYPE]
+  search: state.search[SEARCH_TYPE] || {query: {}, pending: false, data: []}
 }), (dispatch) => ({
   doSearch: query => {
-    const txt = query.text;
-    let match, path, line = 1;
-    // TODO: redirect to MS ref src
-    if (match = txt.match(/([\w\.\d]+):(\d+)/)) {
-      path = `*/${match[1]}`;
-      line = match[2];
-    } else if (match = txt.match(/([^.]+)\.[^.]+\(/)) {
-      path = `*/${match[1]}.*`;
-    } else if (match = txt.match(/(\w+)/)) {
-      path = `*/${match[1]}.*`;
-    }
+    let match = query.text.match(/([\w\.\d]+):(\d+)/);
+    let path = `*/${match[1]}`, line = match[2];
     const url = `${AppSettings.gitRestApi()}/repo/${query.repo}/grep/${query.branch}?q=^&path=${path}&target_line_no=${line}&delimiter=${'%0A%0A'}`;
     dispatch(searchCodes(query, url))
   }
 }))
-export default class SearchBox extends React.Component {
+export default class StackframeSearch extends React.Component {
   render() {
     const loading = this.props.search.pending ? <Spinner spinnerName='circle' noFadeIn /> : <div/>;
     return (

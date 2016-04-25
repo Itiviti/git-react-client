@@ -4,7 +4,8 @@ import {Router, Route, Link, browserHistory} from 'react-router';
 import {Provider} from 'react-redux';
 
 import GitGrep from './components/GitGrep.js';
-import GitSearch from './components/GitSearch.js';
+import GitFile from './components/GitFile.js';
+import GitStackframe from './components/GitStackframe.js';
 import createStore from './store/storage';
 import Settings from './components/GitSettings';
 
@@ -19,7 +20,8 @@ let App = ({children}) =>
         <div className="navbar-collapse collapse">
           <ul className="nav navbar-nav">
             <li><Link to="/gitgrep">Grep</Link></li>
-            <li><Link to="/gitsearch">Search</Link></li>
+            <li><Link to="/gitfile">File</Link></li>
+            <li><Link to="/gitstackframe">Search</Link></li>
           </ul>
           <ul className="nav navbar-nav navbar-right">
             <li><Settings /></li>
@@ -37,7 +39,8 @@ render((
     <Router history={browserHistory}>
       <Route path="/" component={App}>
         <Route path="gitgrep" component={GitGrep}/>
-        <Route path="gitsearch" component={GitSearch}/>
+        <Route path="gitfile" component={GitFile}/>
+        <Route path="gitstackframe" component={GitStackframe}/>
       </Route>
     </Router>
   </Provider>
