@@ -1,13 +1,13 @@
 import {createStore, applyMiddleware } from 'redux';
 import thunkMiddleware from 'redux-thunk';
-import rootReducer from '../reducers';
+import reducers from '../reducers';
 
 const STORE_NAME = 'APP_STORE';
 const initialState = JSON.parse(localStorage.getItem(STORE_NAME) || "{}");
 
 export default function() {
   const store = createStore(
-    rootReducer,
+    reducers,
     initialState,
     applyMiddleware(
       thunkMiddleware

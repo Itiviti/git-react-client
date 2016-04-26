@@ -1,8 +1,8 @@
 import React from 'react';
-import AppSettings from '../../settings.js';
+import AppSettings from '../../../settings';
 import {browserHistory} from 'react-router';
 
-export class GitFormInput extends React.Component {
+export class FormInput extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -28,7 +28,7 @@ export class GitFormInput extends React.Component {
   }
 }
 
-export class GitForm extends React.Component {
+export class Form extends React.Component {
   onFormSubmit = (event) => {
     event.preventDefault();
     const query = {};
@@ -44,7 +44,7 @@ export class GitForm extends React.Component {
   }
 
   componentDidMount() {
-    var query = this.props.location.query || {};
+    const query = this.props.location.query || {};
     if (query.submit === this.props.type) {
       this.props.doSearch(query);
     }

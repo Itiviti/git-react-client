@@ -1,8 +1,6 @@
-const initialState = {
-  query: {},
-  pending: false,
-  data: []
-};
+import {emptyQuery} from '../actions/search'
+
+const initialState = Object.assign({}, emptyQuery);
 
 function search(state = initialState, action) {
   switch (action.type) {

@@ -1,8 +1,8 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {CodeLineGoogleFormat, CodeLineCompactFormat} from './CodeLineFormat.js';
+import {CodeLineGoogleFormat, CodeLineCompactFormat} from './CodeLineFormat';
 
-function GrepResult({layout, ...props}) {
+function Result({layout, ...props}) {
   const formatted = {
     google: <CodeLineGoogleFormat {...props} />
   }[layout] || <CodeLineCompactFormat {...props} />;
@@ -14,4 +14,4 @@ function GrepResult({layout, ...props}) {
 
 export default connect(state => ({
   layout: state.settings.layout
-}), {})(GrepResult);
+}), {})(Result);

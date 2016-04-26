@@ -3,11 +3,14 @@ import {render} from 'react-dom';
 import {Router, Route, Link, browserHistory} from 'react-router';
 import {Provider} from 'react-redux';
 
-import GitGrep from './components/GitGrep.js';
-import GitFile from './components/GitFile.js';
-import GitStackframe from './components/GitStackframe.js';
+import '../css/prism.css';
+import '../css/components/GitGrep.css';
+
+import GrepSearch from './components/Grep';
+import FileSearch from './components/File';
+import StackframeSearch from './components/Stackframe';
 import createStore from './store/storage';
-import Settings from './components/GitSettings';
+import Settings from './components/Settings';
 
 var RouteHandler = Router.RouteHandler;
 let App = ({children}) =>
@@ -38,9 +41,9 @@ render((
   <Provider store={store}>
     <Router history={browserHistory}>
       <Route path="/" component={App}>
-        <Route path="gitgrep" component={GitGrep}/>
-        <Route path="gitfile" component={GitFile}/>
-        <Route path="gitstackframe" component={GitStackframe}/>
+        <Route path="gitgrep" component={GrepSearch}/>
+        <Route path="gitfile" component={FileSearch}/>
+        <Route path="gitstackframe" component={StackframeSearch}/>
       </Route>
     </Router>
   </Provider>
