@@ -3,16 +3,8 @@ import AppSettings from '../../../settings';
 import {browserHistory} from 'react-router';
 
 export class FormInput extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      key: props.name,
-      value: props.value
-    };
-  }
-
   handleChange = (event) => {
-    this.setState({value: event.target.value});
+    this.props.updateQuery(this.props.name, event.target.value);
   }
 
   render() {
@@ -21,7 +13,7 @@ export class FormInput extends React.Component {
         type="search"
         name={this.props.name}
         placeholder={this.props.desc}
-        value={this.state.value}
+        value={this.props.value}
         onChange={this.handleChange} />
       <div className="help">{this.props.desc}</div>
     </div>
@@ -29,13 +21,24 @@ export class FormInput extends React.Component {
 }
 
 export class Form extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      query: props.search.query
+    };
+  }
+
+  componentDidMount() {
+    const query = this.props.location.query || {};
+    if (query.submit === this.props.type) {
+      this.setState({query});
+      this.props.doSearch(query);
+    }
+  }
+
   onFormSubmit = (event) => {
     event.preventDefault();
-    const query = {};
-    for (let ref in this.refs) {
-      const {key, value} = this.refs[ref].state;
-      query[key] = value;
-    }
+    const query = this.state.query;
     query.submit = this.props.type
 
     const location = Object.assign({}, this.props.location, {query});
@@ -43,18 +46,15 @@ export class Form extends React.Component {
     this.props.doSearch(query);
   }
 
-  componentDidMount() {
-    const query = this.props.location.query || {};
-    if (query.submit === this.props.type) {
-      this.props.doSearch(query);
-    }
-  }
-
   render() {
+    const updateQuery = (key, value) => {
+      const query = Object.assign({}, this.state.query, {[key]: value});
+      this.setState({query});
+    }
     const children = this.props.children.map((child, i) => {
       const ref = child.props.name;
-      const value = this.props.search.query[ref] || child.props.init;
-      return React.cloneElement(child, {key: i, ref, value});
+      const value = this.state.query[ref] || child.props.init;
+      return React.cloneElement(child, {key: i, ref, value, updateQuery});
     });
     return (
       <form id="query-form" className="form-group">
