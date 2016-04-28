@@ -2,22 +2,16 @@ import React from 'react';
 import AppSettings from '../../../settings';
 import {browserHistory} from 'react-router';
 
-export class FormInput extends React.Component {
-  handleChange = (event) => {
-    this.props.updateQuery(this.props.name, event.target.value);
-  }
-
-  render() {
-    return <div className={`col-sm-${this.props.size}`}>
-      <input className="form-control"
-        type="search"
-        name={this.props.name}
-        placeholder={this.props.desc}
-        value={this.props.value}
-        onChange={this.handleChange} />
-      <div className="help">{this.props.desc}</div>
-    </div>
-  }
+export function FormInput (props) {
+  return <div className={`col-sm-${props.size}`}>
+    <input className="form-control"
+      type="search"
+      name={props.name}
+      placeholder={props.desc}
+      value={props.value}
+      onChange={event => props.updateQuery(props.name, event.target.value)} />
+    <div className="help">{props.desc}</div>
+  </div>
 }
 
 export class Form extends React.Component {
@@ -30,6 +24,9 @@ export class Form extends React.Component {
 
   componentDidMount() {
     const query = this.props.location.query || {};
+    // TODO don't always re-seach,
+    // if the last query result is still "fresh"
+    // e.g. this.state.query.time within 1min from now
     if (query.submit === this.props.type) {
       this.setState({query});
       this.props.doSearch(query);
@@ -46,15 +43,15 @@ export class Form extends React.Component {
     this.props.doSearch(query);
   }
 
+  updateQuery = (key, value) => {
+    const query = Object.assign({}, this.state.query, {[key]: value});
+    this.setState({query});
+  }
+
   render() {
-    const updateQuery = (key, value) => {
-      const query = Object.assign({}, this.state.query, {[key]: value});
-      this.setState({query});
-    }
     const children = this.props.children.map((child, i) => {
-      const ref = child.props.name;
-      const value = this.state.query[ref] || child.props.init;
-      return React.cloneElement(child, {key: i, ref, value, updateQuery});
+      const value = this.state.query[child.props.name] || child.props.init;
+      return React.cloneElement(child, {key: i, value, updateQuery: this.updateQuery});
     });
     return (
       <form id="query-form" className="form-group">
