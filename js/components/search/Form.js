@@ -14,6 +14,24 @@ export function FormInput (props) {
   </div>
 }
 
+function shouldStartNewSearch(query, lastSearch) {
+  const queryStr = JSON.stringify(query);
+  const resultStr = JSON.stringify(lastSearch.query);
+
+  const NonEmpty = queryStr !== "{}";
+  const isDiff = queryStr !== resultStr;
+  const lastResutMoreThanOneMinute = isMoreThanMinutes(lastSearch.time, 1);
+
+  return NonEmpty && (isDiff || lastResutMoreThanOneMinute);
+}
+
+function isMoreThanMinutes(time, min) {
+  const now = Date.now();
+  const last = time || 0;
+  const diffInMinutes = (now - last) / 60000;
+  return diffInMinutes > min;
+}
+
 export class Form extends React.Component {
   constructor(props) {
     super(props);
@@ -24,10 +42,9 @@ export class Form extends React.Component {
 
   componentDidMount() {
     const query = this.props.location.query || {};
-    // TODO don't always re-seach,
-    // if the last query result is still "fresh"
-    // e.g. this.state.query.time within 1min from now
-    if (query.submit === this.props.type) {
+    if (shouldStartNewSearch(query, this.props.search)
+      // TODO remove the "submit" field
+      && query.submit === this.props.type) {
       this.setState({query});
       this.props.doSearch(query);
     }
