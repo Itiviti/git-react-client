@@ -24,7 +24,7 @@ let App = ({children}) =>
           <ul className="nav navbar-nav">
             <li><Link to="/gitgrep">Grep</Link></li>
             <li><Link to="/gitfile">File</Link></li>
-            <li><Link to="/gitstackframe">Search</Link></li>
+            <li><Link to="/gitstackframe">Stackframe</Link></li>
           </ul>
           <ul className="nav navbar-nav navbar-right">
             <li><Settings /></li>
