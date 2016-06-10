@@ -21,7 +21,7 @@ const SEARCH_TYPE = 'file';
     } else if (match = txt.match(/(\w+)/)) {
       path = `*/${match[1]}.*`;
     }
-    const url = `${AppSettings.gitRestApi()}/repo/${query.repo}/grep/${query.branch}?q=^&path=${path}&target_line_no=${line}&delimiter=${'%0A%0A'}`;
+    const url = `${AppSettings.gitRestApi()}/repo/${query.repo}/grep/${query.branch}?q=^&path=${path}&target_line_no=${line}&delimiter=${'%0D%0A'}`;
     dispatch(searchCodes(query, url));
   }
 }))

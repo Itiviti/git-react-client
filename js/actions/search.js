@@ -1,19 +1,20 @@
-import Rx from 'rx';
+
+import { Observable } from 'rxjs';
 import JsonPipe from 'jsonpipe';
 
 function rxFlow(url, params) {
-  return Rx.Observable.create(obs => {
+  return Observable.create(obs => {
     var xhr = JsonPipe.flow(url, {
-      success: obs.onNext.bind(obs),
-      error: obs.onError.bind(obs),
-      complete: obs.onCompleted.bind(obs),
+      success: obs.next.bind(obs),
+      error: obs.error.bind(obs),
+      complete: obs.complete.bind(obs),
       withCredentials: false
     });
-    return Rx.Disposable.create(() => xhr.abort());
+    return () => xhr.abort();
   });
 }
 
-const PRESSING_ESC = Rx.Observable
+const PRESSING_ESC = Observable
   .fromEvent(document, 'keydown')
   .filter(e => e.keyCode === 27);
 
@@ -21,7 +22,7 @@ export function searchCodes(query, url) {
   return dispatch => {
     dispatch({type: "SEARCH_CODES", time: Date.now(), query});
     rxFlow(url, {withCredentials: false})
-      .bufferWithTimeOrCount(500, 10)
+      .bufferTime(500)
       .map(more => ({type: "RECEIVE_CODES_CHUNK", query, more}))
       // TODO auto-forward (if enabled by settings)
       // .doOnCompleted(() => {

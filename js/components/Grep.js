@@ -13,7 +13,7 @@ const SEARCH_TYPE = 'grep';
   search: state.search[SEARCH_TYPE] || emptyQuery
 }), (dispatch) => ({
   doSearch: query => {
-    const url = `${AppSettings.gitRestApi()}/repo/${query.repo}/grep/${query.branch}?q=${query.text}&path=${query.path}&delimiter=${'%0A%0A'}`;
+    const url = `${AppSettings.gitRestApi()}/repo/${query.repo}/grep/${query.branch}?q=${query.text}&path=${query.path}&delimiter=${'%0D%0A'}`;
     dispatch(searchCodes(query, url));
   }
 }))

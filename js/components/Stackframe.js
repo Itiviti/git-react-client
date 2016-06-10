@@ -15,7 +15,7 @@ const SEARCH_TYPE = 'stackframe';
   doSearch: query => {
     let match = query.text.match(/([\w\.\d]+):(\d+)/);
     let path = `*/${match[1]}`, line = match[2];
-    const url = `${AppSettings.gitRestApi()}/repo/${query.repo}/grep/${query.branch}?q=^&path=${path}&target_line_no=${line}&delimiter=${'%0A%0A'}`;
+    const url = `${AppSettings.gitRestApi()}/repo/${query.repo}/grep/${query.branch}?q=^&path=${path}&target_line_no=${line}&delimiter=${'%0D%0A'}`;
     dispatch(searchCodes(query, url));
   }
 }))
