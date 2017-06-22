@@ -14,7 +14,7 @@ module.exports = {
         app: isProduction ? ['./js/app.tsx'] : ['webpack/hot/only-dev-server', './js/app.tsx']
     },
     output: {
-        path: './dist',
+        path: path.resolve(__dirname, 'dist'),
         filename: 'bundle.js'
     },
     resolve: {
