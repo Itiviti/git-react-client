@@ -16,13 +16,14 @@ import ToolbarTitle = require('material-ui/lib/toolbar/toolbar-title')
 
 import SearchOptions from './searchoptions/SearchOptions'
 
-export default class SearchBox extends React.Component<{location: any}, {repo?: string, text?: string, branch?: string, mode?: string, redirect?: boolean, data?: any, showSearchOptions?: boolean, orig?: any, pending?: boolean, layout?: string}> {
+export default class SearchBox extends React.Component<{location: any}, {repo?: string, text?: string, branch?: string, mode?: string, redirect?: boolean, data?: any, showSearchOptions?: boolean, orig?: any, pending?: boolean, layout?: string, ignore_case?: boolean}> {
   constructor(props) {
     super(props);
     var query = this.props.location.query || {};
     this.state = {
       repo: query.repo || query.project,
       text: query.text || query.grep,
+      ignore_case: !!query.ignore_case,
       branch: query.branch || query.ref,
       mode: query.mode,
       redirect: query.redirect || false,
@@ -61,7 +62,7 @@ export default class SearchBox extends React.Component<{location: any}, {repo?: 
     }
     var esc = Observable.fromEvent<{keyCode: number}>(document, 'keydown').filter(e => e.keyCode == 27);
     var paths_query = paths.map(p => `path=${p}`).join('&');
-    rxFlow(`${gitRestApi()}/repo/${params.repo}/grep/${params.branch}?q=^&${paths_query}&target_line_no=${line}&delimiter=${'%0A%0A'}`, { withCredentials: false })
+    rxFlow(`${gitRestApi()}/repo/${params.repo}/grep/${params.branch}?q=^&${paths_query}&target_line_no=${line}&delimiter=${'%0A%0A'}${params.ignore_case?'&ignore_case=true':''}`, { withCredentials: false })
       .bufferTime(500)
       .map(elt => this.state.data.concat(elt))
       .map(orig => ({ orig, data: tranformDataForLayout(orig, this.state.layout) }))
@@ -87,6 +88,7 @@ export default class SearchBox extends React.Component<{location: any}, {repo?: 
 
   renderSearchParams() {
     if (this.state.repo) {
+      var ignoreCaseTitle = this.state.ignore_case ? <ToolbarTitle style={{ fontWeight: "bold" }} text="(Ignore case)"/> : null;
       return <div>
         <ToolbarTitle text="Repositories"/>
         <ToolbarTitle style={{ fontWeight: "bold" }} text={this.state.repo}/>
@@ -94,13 +96,14 @@ export default class SearchBox extends React.Component<{location: any}, {repo?: 
         <ToolbarTitle style={{ fontWeight: "bold" }} text={this.state.branch}/>
         <ToolbarTitle text="File pattern"/>
         <ToolbarTitle style={{ fontWeight: "bold" }} text={this.state.text}/>
+        {ignoreCaseTitle}
       </div>
     }
     return <ToolbarTitle text="No search has been run yet"/>
   }
 
   onSearchOptionsValidate(options) {
-    var subState = (options: any) => ({text: options.text, branch: options.branch, repo: options.repo, submit: 'Search', redirect: options.redirect});
+    var subState = (options: any) => ({text: options.text, branch: options.branch, repo: options.repo, submit: 'Search', redirect: options.redirect, ignore_case: options.ignore_case});
     assign(this.props.location.query, subState(options));
     this.setState(options)
     browserHistory.replace(this.props.location);
