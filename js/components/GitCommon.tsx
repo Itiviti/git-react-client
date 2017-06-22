@@ -1,8 +1,6 @@
-/// <reference path="../../typings/tsd.d.ts" />
-
 import * as React from 'react'
 import * as JsonPipe from 'jsonpipe'
-import GrepResult from './GrepResult.tsx'
+import GrepResult from './GrepResult'
 import {Observable, Subscription, Subscriber} from '@reactivex/rxjs'
 import assign = require('object-assign');
 

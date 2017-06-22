@@ -1,11 +1,9 @@
-/// <reference path="../../typings/react/react-global.d.ts" />
-
 import * as React from 'react'
 import '../../css/prism.css'
 import '../prism.js'
 import { PrismCode } from 'react-prism'
 import '../../css/components/GitGrep.css'
-import { gitViewer, gitRestApi, GitViewer } from '../../settings.tsx'
+import { gitViewer, gitRestApi, GitViewer } from '../../settings'
 
 export default class GrepResult extends React.Component<{key: any, file: string, repo: string, layout: string, branch: string, line_no: number, line: string}, {}> {
   gitViewer: GitViewer

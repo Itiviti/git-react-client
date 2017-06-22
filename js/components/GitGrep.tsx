@@ -1,9 +1,9 @@
 import * as React from 'react'
-import GrepResult from './GrepResult.tsx'
+import GrepResult from './GrepResult'
 import '../../css/components/GitGrep.css'
-import { renderNodesForLayout, rxFlow, tranformDataForLayout } from './GitCommon.tsx'
+import { renderNodesForLayout, rxFlow, tranformDataForLayout } from './GitCommon'
 import { browserHistory } from 'react-router'
-import { gitRestApi } from '../../settings.tsx'
+import { gitRestApi } from '../../settings'
 import * as Cookie from 'react-cookie'
 import {Observable, Subscription} from '@reactivex/rxjs'
 import assign = require('object-assign');
@@ -15,7 +15,7 @@ import ToolbarGroup = require('material-ui/lib/toolbar/toolbar-group')
 import ToolbarSeparator = require('material-ui/lib/toolbar/toolbar-separator')
 import ToolbarTitle = require('material-ui/lib/toolbar/toolbar-title')
 
-import GrepOptions from './searchoptions/GrepOptions.tsx'
+import GrepOptions from './searchoptions/GrepOptions'
 
 class Settings extends React.Component<{settingsUpdated: (settings: {layout: string}) => void }, {layout: string}> {
   constructor(props) {
@@ -43,7 +43,7 @@ interface ObjectConstructor {
 }
 
 
-export default class GrepBox extends React.Component<{location: any}, {orig?: any, data?: any, repo?: string, text?: string, branch?: string, path?: string, layout?: string, pending?: boolean, showSearchOptions?: boolean}> {
+export default class GrepBox extends React.Component<{location: any}, {orig?: any, data?: any, repo?: string, text?: string, branch?: string, path?: string, layout?: string, pending?: boolean, showSearchOptions?: boolean, ignore_case?: boolean}> {
   constructor(props) {
     super(props);
     var query = this.props.location.query || {};
@@ -51,6 +51,7 @@ export default class GrepBox extends React.Component<{location: any}, {orig?: an
       orig: [],
       repo: query.repo || query.project,
       text: query.text || query.grep,
+      ignore_case: !!query.ignore_case,
       branch: query.branch || query.ref,
       path: query.path,
       data: [],
@@ -67,7 +68,7 @@ export default class GrepBox extends React.Component<{location: any}, {orig?: an
       showSearchOptions: false,
     });
     var esc = Observable.fromEvent<{keyCode: number}>(document, 'keydown').filter(e => e.keyCode == 27);
-    rxFlow(`${gitRestApi()}/repo/${params.repo}/grep/${params.branch}?q=${params.text}&path=${params.path}&delimiter=${'%0A%0A'}`, { withCredentials: false })
+    rxFlow(`${gitRestApi()}/repo/${params.repo}/grep/${params.branch}?q=${params.text}&path=${params.path}&delimiter=${'%0A%0A'}${params.ignore_case?'&ignore_case=true':''}`, { withCredentials: false })
       .bufferTime(500)
       .map(elt => this.state.orig.concat(elt))
       .map(orig => ({ orig, data: tranformDataForLayout(orig, this.state.layout) }))
@@ -76,7 +77,7 @@ export default class GrepBox extends React.Component<{location: any}, {orig?: an
       .subscribe(this.setState.bind(this));
   }
   onSearchOptionsValidate(options) {
-    var subState = (state: any) => ({path: state.path, text: state.text, branch: state.branch, repo: state.repo, submit: 'Grep'});
+    var subState = (state: any) => ({path: state.path, text: state.text, branch: state.branch, repo: state.repo, submit: 'Grep', ignore_case: state.ignore_case});
     assign(this.props.location.query, subState(options));
     this.setState(options)
     browserHistory.replace(this.props.location);
@@ -95,11 +96,13 @@ export default class GrepBox extends React.Component<{location: any}, {orig?: an
   }
   renderSearchParams() {
     if (this.state.repo) {
+      var ignoreCaseTitle = this.state.ignore_case ? <ToolbarTitle style={{ fontWeight: "bold" }} text="(Ignore case)"/> : null;
       return <div>
         <ToolbarTitle text="Repositories"/>
         <ToolbarTitle style={{ fontWeight: "bold" }} text={this.state.repo}/>
         <ToolbarTitle text="Search expression"/>
         <ToolbarTitle style={{ fontWeight: "bold" }} text={this.state.text}/>
+        {ignoreCaseTitle}
         <ToolbarTitle text="Branch"/>
         <ToolbarTitle style={{ fontWeight: "bold" }} text={this.state.branch}/>
         <ToolbarTitle text="File pattern"/>
