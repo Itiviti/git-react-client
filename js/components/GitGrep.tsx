@@ -1,9 +1,9 @@
 import * as React from 'react'
-import GrepResult from './GrepResult.tsx'
+import GrepResult from './GrepResult'
 import '../../css/components/GitGrep.css'
-import { renderNodesForLayout, rxFlow, tranformDataForLayout } from './GitCommon.tsx'
+import { renderNodesForLayout, rxFlow, tranformDataForLayout } from './GitCommon'
 import { browserHistory } from 'react-router'
-import { gitRestApi } from '../../settings.tsx'
+import { gitRestApi } from '../../settings'
 import * as Cookie from 'react-cookie'
 import {Observable, Subscription} from '@reactivex/rxjs'
 import assign = require('object-assign');
@@ -15,7 +15,7 @@ import ToolbarGroup = require('material-ui/lib/toolbar/toolbar-group')
 import ToolbarSeparator = require('material-ui/lib/toolbar/toolbar-separator')
 import ToolbarTitle = require('material-ui/lib/toolbar/toolbar-title')
 
-import GrepOptions from './searchoptions/GrepOptions.tsx'
+import GrepOptions from './searchoptions/GrepOptions'
 
 class Settings extends React.Component<{settingsUpdated: (settings: {layout: string}) => void }, {layout: string}> {
   constructor(props) {

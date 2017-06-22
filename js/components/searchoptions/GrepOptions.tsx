@@ -6,7 +6,7 @@ import SelectField = require('material-ui/lib/select-field')
 import MenuItem = require('material-ui/lib/menus/menu-item')
 import Toggle = require('material-ui/lib/toggle')
 import Dialog = require('material-ui/lib/dialog')
-import {OptionsBase, OptionsBaseState} from './OptionsBase.tsx'
+import {OptionsBase, OptionsBaseState} from './OptionsBase'
 
 export default class GrepOptions extends OptionsBase<{location: any, onValidate: any, onRequestClose: any, show: boolean}, GrepOptionsState> {
   constructor(props) {

@@ -1,9 +1,9 @@
 import * as React from 'react'
-import GrepResult from './GrepResult.tsx'
+import GrepResult from './GrepResult'
 import '../../css/components/GitGrep.css'
-import { renderNodesForLayout, rxFlow, tranformDataForLayout } from './GitCommon.tsx'
+import { renderNodesForLayout, rxFlow, tranformDataForLayout } from './GitCommon'
 import { browserHistory } from 'react-router'
-import { gitViewer, gitRestApi } from '../../settings.tsx'
+import { gitViewer, gitRestApi } from '../../settings'
 import {Observable, Subscription} from '@reactivex/rxjs'
 import assign = require('object-assign')
 import RaisedButton = require('material-ui/lib/raised-button')
@@ -14,7 +14,7 @@ import ToolbarGroup = require('material-ui/lib/toolbar/toolbar-group')
 import ToolbarSeparator = require('material-ui/lib/toolbar/toolbar-separator')
 import ToolbarTitle = require('material-ui/lib/toolbar/toolbar-title')
 
-import SearchOptions from './searchoptions/SearchOptions.tsx'
+import SearchOptions from './searchoptions/SearchOptions'
 
 export default class SearchBox extends React.Component<{location: any}, {repo?: string, text?: string, branch?: string, mode?: string, redirect?: boolean, data?: any, showSearchOptions?: boolean, orig?: any, pending?: boolean, layout?: string}> {
   constructor(props) {

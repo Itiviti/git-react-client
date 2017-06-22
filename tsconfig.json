@@ -1,17 +1,13 @@
 {
   "compilerOptions": {
-    "jsx": "react",
-    "target": "es5",
+    "outDir": "./dist/",
     "sourceMap": true,
     "module": "commonjs",
-    "moduleResolution": "node"
+    "target": "es5",
+    "jsx": "react",
+    "lib": ["es6", "dom"]
   },
-  "filesGlob": [
-    "**/*.ts",
-    "**/*.tsx",
-    "!node_modules/**"
-  ],
-  "exclude": [
-    "node_modules"
+  "include": [
+    "./js/**/*"
   ]
 }

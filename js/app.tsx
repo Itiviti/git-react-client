@@ -1,9 +1,7 @@
-/// <reference path="../typings/tsd.d.ts" />
-
 import * as React from 'react'
 import { render } from 'react-dom'
 import * as ReactRouter from 'react-router'
-import { prefix } from '../settings.tsx'
+import { prefix } from '../settings'
 
 import injectTapEventPlugin = require('react-tap-event-plugin')
 injectTapEventPlugin()
@@ -11,8 +9,8 @@ injectTapEventPlugin()
 import LeftNav = require('material-ui/lib/left-nav')
 import AppBar = require('material-ui/lib/app-bar')
 
-import GitGrep from './components/GitGrep.tsx'
-import GitSearch from './components/GitSearch.tsx'
+import GitGrep from './components/GitGrep'
+import GitSearch from './components/GitSearch'
 import PlainRoute = ReactRouter.PlainRoute;
 
 let menuItems = [
@@ -21,7 +19,7 @@ let menuItems = [
   { route: prefix() + 'gitsearch', text: 'GIT Search' },
 ]
 
-class App extends React.Component<{children: __React.ReactNode[], routes: PlainRoute[]}, {nav?: boolean, title?: string}> {
+class App extends React.Component<{children: React.ReactNode[], routes: PlainRoute[]}, {nav?: boolean, title?: string}> {
   constructor(props) {
     super(props);
     this.state = {
