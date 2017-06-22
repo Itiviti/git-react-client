@@ -6,6 +6,7 @@ import SelectField = require('material-ui/lib/select-field')
 import MenuItem = require('material-ui/lib/menus/menu-item')
 import Toggle = require('material-ui/lib/toggle')
 import Dialog = require('material-ui/lib/dialog')
+import { defaultRepoQuery } from '../../../settings'
 
 export abstract class OptionsBase<P extends OptionsBaseProperties, S extends OptionsBaseState> extends React.Component<P, S> {
   constructor(props) {
@@ -17,7 +18,7 @@ export abstract class OptionsBase<P extends OptionsBaseProperties, S extends Opt
 
   initState() {
     var query = this.props.location.query || {};
-    this.state.repo = query.repo || query.project || '^ul';
+    this.state.repo = query.repo || query.project || defaultRepoQuery();
     this.state.text = query.text || query.grep || '';
     this.state.branch =  query.branch || query.ref || 'HEAD';
   }
