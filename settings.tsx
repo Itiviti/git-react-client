@@ -8,8 +8,8 @@ export interface GitViewer {
 }
 
 export function prefix() { return DEBUG ? '/' : '/reactgit/'; }
-export function gitRestApi() { return 'http://git-viewer:1337' }
-export function gitViewer() { return create('http://git-viewer/gitweb') }
+export function gitRestApi() { return 'http://git-viewer.ullink.lan:1337' }
+export function gitViewer() { return create('http://git-viewer.ullink.lan/gitweb') }
 export function defaultRepoQuery() { return '^ul' }
 
 function create(baseUrl: string) : GitViewer {
