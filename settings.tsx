@@ -9,12 +9,8 @@ export interface GitViewer {
 
 export function prefix() { return DEBUG ? '/' : '/reactgit/'; }
 export function gitRestApi() { return 'http://git-viewer.ullink.lan:1337' }
-export function gitViewer() { return create('http://git-viewer.ullink.lan/gitweb') }
+export function gitViewer() { return new CGitViewer('http://git-viewer.ullink.lan/cgit') }
 export function defaultRepoQuery() { return '^ul' }
-
-function create(baseUrl: string) : GitViewer {
-   return new GitwebViewer(baseUrl);
-} 
 
 class GitwebViewer implements GitViewer {
   baseUrl : string
@@ -32,5 +28,24 @@ class GitwebViewer implements GitViewer {
   }
   viewerForLine({repo, branch, file, line_no}) {
     return `${this.baseUrl}/?p=${repo};a=blob;f=${file};hb=${branch};js=1#l${line_no}`;
+  }
+}
+
+class CGitViewer implements GitViewer {
+  baseUrl : string
+  constructor(baseUrl) {
+    this.baseUrl = baseUrl;
+  }
+  viewerForRepo({repo}) {
+    return `${this.baseUrl}/${repo}`;
+  }
+  viewerForBranch({repo, branch}) {
+    return `${this.baseUrl}/${repo}/log/?h=${branch}`;
+  }
+  viewerForPath({repo, branch, file}) {
+    return `${this.baseUrl}/${repo}/tree/${file}?h=${branch}`;
+  }
+  viewerForLine({repo, branch, file, line_no}) {
+    return `${this.baseUrl}/${repo}/tree/${file}?h=${branch}#n${line_no}`;
   }
 }
