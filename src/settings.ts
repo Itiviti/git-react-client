@@ -17,6 +17,6 @@ export interface ISource {
 
 const config:any = packageJson;
 export function prefix() { return config.homepage }
-export function gitRestApi() { return config.resetApi }
+export function gitRestApi() { return config.restApi }
 export function gitViewer() { return new CGitViewer(config.gitViewer) }
 export function defaultRepoQuery() { return '^ul' }
