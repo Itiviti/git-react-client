@@ -1,0 +1,24 @@
+.App {
+  text-align: center;
+}
+
+a, a:focus, a:hover {
+  color: #2a9fd6
+}
+
+pre.results {
+  background: #272822;
+  color: gray;
+  text-align: left;
+  font-family: "roboto mono", consolas, monospace;
+  font-size: 11px;
+  margin: 0;
+}
+
+h4.results {
+    color: white;
+}
+
+pre.results code {
+  white-space: nowrap;
+}
