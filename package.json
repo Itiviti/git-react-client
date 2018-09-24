@@ -32,6 +32,6 @@
     "typescript": "^3.0.3"
   },
   "homepage": "http://git-viewer.ullink.lan/reactgit/",
-  "resetApi": "http://git-viewer.ullink.lan:1337",
+  "restApi": "http://git-viewer.ullink.lan:1337",
   "gitViewer": "http://git-viewer.ullink.lan/cgit"
 }
