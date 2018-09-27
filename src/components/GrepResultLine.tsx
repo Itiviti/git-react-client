@@ -3,7 +3,7 @@ import { PrismCode } from 'react-prism'
 import { gitViewer, IGitViewer, ISource } from '../settings'
 
 export interface IGrepResultLine extends ISource {
-  key: any, file: string, repo: string, layout?: string, branch: string, lineNo: number, line: string
+  key: any, file: string, repo: string, layout?: string, branch: string, line_no: number, line: string, style?: React.CSSProperties
 }
 
 export default class GrepResultLine extends React.Component<IGrepResultLine, {}> {
@@ -35,11 +35,11 @@ export default class GrepResultLine extends React.Component<IGrepResultLine, {}>
     }
     const repoHeader = ( <a href={this.gitViewer.viewerForRepo(this.props)}>{this.props.repo.replace(/\.git$/,'')}</a> );
     return (
-      <div className="result">
+      <div className="result" style={this.props.style}>
         {this.props.layout === 'google' ? '' : repoHeader}:
         <a href={this.gitViewer.viewerForBranch(this.props)}>{this.props.branch}</a>:
         <a href={this.gitViewer.viewerForPath(this.props)}>{this.props.file}</a>:
-        <a href={this.gitViewer.viewerForLine(this.props)}>{this.props.lineNo}</a>:
+        <a href={this.gitViewer.viewerForLine(this.props)}>{this.props.line_no}</a>:
         <PrismCode className={lang}>{this.props.line}</PrismCode>
       </div>
     );

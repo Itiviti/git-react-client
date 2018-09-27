@@ -19,7 +19,7 @@ export class CGitViewer implements IGitViewer {
         return `${this.baseUrl}/${repo}/tree/${file}?h=${branch}`;
     }
     public viewerForLine(source: ISource) {
-        const {repo, branch, file, lineNo} = source;
-         return `${this.baseUrl}/${repo}/tree/${file}?h=${branch}#n${lineNo}`;
+        const {repo, branch, file, line_no} = source;
+         return `${this.baseUrl}/${repo}/tree/${file}?h=${branch}#n${line_no}`;
     }
 }

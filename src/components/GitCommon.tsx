@@ -3,6 +3,10 @@ import * as React from 'react';
 import { Observable, Subscriber, Subscription } from 'rxjs';
 import GrepResult, { IGrepResultLine } from './GrepResultLine';
 
+export function renderCompactNode(grep: IGrepResultLine, key: string, style: React.CSSProperties) {
+  return <GrepResult key={key} { ...grep } layout='compact' style={style} />
+}
+
 export function renderNodesForLayout(data: any, layout: string | undefined) {
   let idx = 0;
   switch (layout) {
@@ -12,14 +16,14 @@ export function renderNodesForLayout(data: any, layout: string | undefined) {
         return [ (
             <h4 key={'H'+headerIdx++} className="results">{repo.replace(/\.git$/,'')}</h4>
           )].concat(data[repo].map((grep: IGrepResultLine) => (
-            <GrepResult key={idx++} repo={grep.repo} branch={grep.branch} file={grep.file} lineNo={grep.lineNo} line={grep.line} layout={layout}/>
+            <GrepResult key={idx++} { ...grep } layout={layout}/>
           )));
         });
       return [].concat.apply([], grepNodes);
     case 'compact':
     default:
       return data.map((grep: IGrepResultLine) => (
-        <GrepResult key={idx++} repo={grep.repo} branch={grep.branch} file={grep.file} lineNo={grep.lineNo} line={grep.line} layout={layout}/>
+        <GrepResult key={idx++} { ...grep } layout={layout}/>
       ));
   }
 }

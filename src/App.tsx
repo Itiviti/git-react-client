@@ -1,17 +1,20 @@
-import { AppBar, Button, createStyles, Divider, Drawer, IconButton, LinearProgress, List, ListItem, ListItemText, Toolbar, Typography, WithStyles, withStyles } from '@material-ui/core';
+import { AppBar, Button, createStyles, Divider, Drawer, IconButton, InputAdornment, LinearProgress, List, ListItem, ListItemText, TextField, Toolbar, Typography, WithStyles, withStyles } from '@material-ui/core';
 import transitions from '@material-ui/core/styles/transitions';
 import BuildIcon from '@material-ui/icons/Build';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import FilterListIcon from '@material-ui/icons/FilterList';
 import MenuIcon from '@material-ui/icons/Menu';
 import  * as H from 'history';
 import * as querystring from 'querystring';
 import * as React from 'react';
 import { CSSProperties } from 'react';
 import { Redirect } from 'react-router';
+import * as Virtual from 'react-virtualized';
 import { fromEvent, merge, Subject } from 'rxjs';
 import { bufferTime, filter, finalize, takeUntil } from 'rxjs/operators';
 import './App.css';
-import { renderNodesForLayout, rxFlow } from './components/GitCommon';
+import { renderCompactNode, rxFlow } from './components/GitCommon';
+import { IGrepResultLine } from './components/GrepResultLine';
 import GrepOptions, { IGrepOptionsState } from './components/searchoptions/GrepOptions';
 import SearchOptions, { ISearchOptionsState } from './components/searchoptions/SearchOptions';
 import { gitRestApi } from './settings';
@@ -22,6 +25,7 @@ interface IState {
   redirect?: string,
   data?: any,
   pending?: boolean,
+  filter?: string,
   options?: {
     repo?: string,
     text?: string,
@@ -83,6 +87,7 @@ class App extends React.Component<IProps, IState> {
 
     this.state = {
       data: [],
+      filter: '',
       menuOpen: false,
       optionOpen: this.isGitSearch() || !repo,
       options: {
@@ -105,53 +110,79 @@ class App extends React.Component<IProps, IState> {
       return <Redirect push={true} to={this.state.redirect} />
     }
 
-    const hasData = !!this.state.data;
     const isGitSearch = this.isGitSearch();
     const appBarStyle = this.state.menuOpen ? appBarShift : appBarShiftBack;
 
-    return (
-      <div className="App">
-        <AppBar position="static" style={appBarStyle}>
-          <Toolbar>
-            <IconButton color="inherit" aria-label="Menu" onClick={this.toggleMenu} style={{ marginRight: 15 }}>
-              <MenuIcon />
-            </IconButton>
+    const filterText = this.state.filter;
+    let data = this.state.data;
 
-            <Typography variant="title" color="inherit">{isGitSearch ? "Git Search" : "Git Grep"}</Typography>
-            <div style={{ flexGrow: 1 }}>
-              {this.renderParams()}
-            </div>
-            <Button color="default" variant="contained" onClick={this.toggleOption}>
-              <BuildIcon />
-            </Button>
-          </Toolbar>
-        </AppBar>
-        {this.state.pending &&
-          <LinearProgress color='secondary' />
-        }
-        <Drawer variant="persistent" anchor="left" open={this.state.menuOpen}>
-          <List>
-            <div className={this.props.classes.drawerHeader}>
-              <IconButton onClick={this.toggleMenu}>
-                <ChevronLeftIcon />
-              </IconButton>
-            </div>
-            <Divider />
-            <ListItem button={true} onClick={this.navigate('/gitgrep')}>
-              <ListItemText primaryTypographyProps={{ variant: 'subheading', color: isGitSearch ? 'default' : 'secondary' }} primary='Git Grep' />
-            </ListItem>
-            <ListItem button={true} onClick={this.navigate('/gitsearch')}>
-              <ListItemText primaryTypographyProps={{ variant: 'subheading', color: isGitSearch ? 'secondary' : 'default' }} primary='Git Search' />
-            </ListItem>
-          </List>
-        </Drawer>
-        {this.renderOption(isGitSearch)}
-        <pre className='results'>
-          {hasData &&
-            renderNodesForLayout(this.state.data, this.state.options!.layout)
-          }
-        </pre>
-      </div>
+    if (data && filterText) {
+      data = this.state.data!.filter((d: IGrepResultLine) => d.repo.includes(filterText) || d.file.includes(filterText) || d.branch.includes(filterText) || d.line.includes(filterText));
+    }
+
+    return (
+      <Virtual.WindowScroller>
+        {({ height, isScrolling, onChildScroll, scrollTop }) => (
+          <div className="App">
+            <AppBar position="fixed" style={appBarStyle}>
+              <Toolbar>
+                <IconButton color="inherit" aria-label="Menu" onClick={this.toggleMenu} style={{ marginRight: 15 }}>
+                  <MenuIcon />
+                </IconButton>
+                <Typography variant="title" color="inherit">{isGitSearch ? "Git Search" : "Git Grep"}</Typography>
+                <div style={{ flexGrow: 1, overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                  {this.renderParams()}
+                </div>
+                <TextField value={this.state.filter} onChange={this.handleFilterTextChange} className='filter' style={{ paddingLeft: 5, paddingRight: 5 }} InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <FilterListIcon style={{ color: 'white' }} />
+                    </InputAdornment>
+                  )
+                }}/>
+                <Button color="default" variant="contained" onClick={this.toggleOption}>
+                  <BuildIcon />
+                </Button>
+              </Toolbar>
+            </AppBar>
+            {this.state.pending &&
+              <LinearProgress color='secondary' />
+            }
+            <Drawer variant="persistent" anchor="left" open={this.state.menuOpen}>
+              <List>
+                <div className={this.props.classes.drawerHeader}>
+                  <IconButton onClick={this.toggleMenu}>
+                    <ChevronLeftIcon />
+                  </IconButton>
+                </div>
+                <Divider />
+                <ListItem button={true} onClick={this.navigate('/gitgrep')}>
+                  <ListItemText primaryTypographyProps={{ variant: 'subheading', color: isGitSearch ? 'default' : 'secondary' }} primary='Git Grep' />
+                </ListItem>
+                <ListItem button={true} onClick={this.navigate('/gitsearch')}>
+                  <ListItemText primaryTypographyProps={{ variant: 'subheading', color: isGitSearch ? 'secondary' : 'default' }} primary='Git Search' />
+                </ListItem>
+              </List>
+            </Drawer>
+            {this.renderOption(isGitSearch)}
+            {!!data &&
+              <pre className='results'>
+                <Virtual.List
+                  autoHeight={true}
+                  isScrolling={isScrolling}
+                  onScroll={onChildScroll}
+                  scrollTop={scrollTop}
+                  overscanRowCount={100}
+                  rowCount={data.length}
+                  rowRenderer={this.renderResult(data)}
+                  width={5000}
+                  height={height}
+                  rowHeight={16} />
+              </pre>
+            }
+          </div>
+        )}
+      </Virtual.WindowScroller>
     );
   }
 
@@ -163,7 +194,7 @@ class App extends React.Component<IProps, IState> {
 
   public renderParams() {
     if (this.state.options && this.state.options.repo) {
-      const baseStyle: CSSProperties = { float: 'left', marginLeft: 13 };
+      const baseStyle: CSSProperties = { display: 'inline-block', marginLeft: 13 };
       const boldStyle: CSSProperties = { ...baseStyle, fontWeight: "bold" };
 
       const options = this.state.options;
@@ -184,6 +215,10 @@ class App extends React.Component<IProps, IState> {
       );
     }
     return (<Typography variant="subheading" color="inherit">No search has been run yet</Typography>);
+  }
+
+  private renderResult: (results: IGrepResultLine[]) => (props: Virtual.ListRowProps) => React.ReactNode = results => props => {
+    return renderCompactNode(results[props.index], props.key, { ...props.style, width: 'auto' });
   }
 
   private renderOption(isGitSearch: boolean) {
@@ -226,6 +261,10 @@ class App extends React.Component<IProps, IState> {
     });
   }
 
+  private handleFilterTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({...this.state, filter: e.target.value});
+  }
+
   private isGitSearch(): boolean {
     const currentLocation = window.location.pathname;
     return currentLocation.endsWith('gitsearch');
@@ -247,20 +286,22 @@ class App extends React.Component<IProps, IState> {
     const esc = fromEvent<{keyCode: number}>(document, 'keydown').pipe(
       filter(e => e.keyCode === 27)
     );
-    rxFlow(`${gitRestApi()}/repo/${params.repo}/grep/${params.branch}?q=${params.text}&path=${params.path}&delimiter=${'%0A%0A'}${params.ignoreCase?'&ignore_case=true':''}`, { withCredentials: false }).pipe(
+    rxFlow(`${gitRestApi()}/repo/${params.repo}/grep/${params.branch}?q=${params.text ? params.text : ''}&path=${params.path}&delimiter=${'%0A%0A'}${params.ignoreCase?'&ignore_case=true':''}`, { withCredentials: false }).pipe(
       bufferTime(500),
       takeUntil(merge(this.startQuery,esc)),
       finalize(() => this.setState({
         ...this.state,
         pending: false
       })),
+      filter(update => update && update.length > 0)
     ).subscribe(update => {
       const data = this.state.data!;
       data.push(...update);
       this.setState({
-      ...this.state,
-      data
-    })});
+        ...this.state,
+        data
+      });
+    });
   }
 }
 

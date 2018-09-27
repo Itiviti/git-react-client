@@ -12,7 +12,7 @@ export interface ISource {
   repo: string,
   branch?: string,
   file?: string,
-  lineNo?: number
+  line_no?: number
 }
 
 const config:any = packageJson;

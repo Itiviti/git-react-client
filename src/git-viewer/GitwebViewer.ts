@@ -19,7 +19,7 @@ export class GitwebViewer implements IGitViewer {
         return `${this.baseUrl}/?p=${repo};a=blob;f=${file};hb=${branch};js=1`;
     }
     public viewerForLine(source: ISource) {
-        const {repo, branch, file, lineNo} = source;
-        return `${this.baseUrl}/?p=${repo};a=blob;f=${file};hb=${branch};js=1#l${lineNo}`;
+        const {repo, branch, file, line_no} = source;
+        return `${this.baseUrl}/?p=${repo};a=blob;f=${file};hb=${branch};js=1#l${line_no}`;
     }
 }

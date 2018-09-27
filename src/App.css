@@ -1,3 +1,7 @@
+body {
+  background: #272822;
+}
+
 .App {
   text-align: center;
 }
@@ -7,18 +11,29 @@ a, a:focus, a:hover {
 }
 
 pre.results {
-  background: #272822;
   color: gray;
   text-align: left;
   font-family: "roboto mono", consolas, monospace;
   font-size: 11px;
-  margin: 0;
+  margin: 64px 0 0 0;
 }
 
 h4.results {
     color: white;
 }
 
+pre.results a {
+  text-decoration: none;
+}
+
 pre.results code {
-  white-space: nowrap;
+  white-space: pre;
+}
+
+.filter input {
+  color: white;
+}
+
+.filter > div:after {
+  border-bottom-color: white;
 }
