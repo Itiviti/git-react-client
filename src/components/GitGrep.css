@@ -1,9 +1,10 @@
-a {
-  color: #5050f0;
+a, a:focus, a:hover {
+  color: #2a9fd6
 }
 
 pre.results {
   background: #272822;
+  color: gray;
 }
 
 h4.results {
