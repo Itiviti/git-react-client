@@ -156,10 +156,10 @@ class App extends React.Component<IProps, IState> {
                   </IconButton>
                 </div>
                 <Divider />
-                <ListItem button={true} onClick={this.navigate('/gitgrep')}>
+                <ListItem button={true} onClick={this.navigate('gitgrep')}>
                   <ListItemText primaryTypographyProps={{ variant: 'subheading', color: isGitSearch ? 'default' : 'secondary' }} primary='Git Grep' />
                 </ListItem>
-                <ListItem button={true} onClick={this.navigate('/gitsearch')}>
+                <ListItem button={true} onClick={this.navigate('gitsearch')}>
                   <ListItemText primaryTypographyProps={{ variant: 'subheading', color: isGitSearch ? 'secondary' : 'default' }} primary='Git Search' />
                 </ListItem>
               </List>
