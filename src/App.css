@@ -27,7 +27,7 @@ pre.results a {
   text-decoration: none;
 }
 
-pre.results a:focus, a:hover {
+pre.results a:focus, pre.results a:hover {
   text-decoration: underline;
 }
 
