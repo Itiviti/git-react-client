@@ -22,7 +22,7 @@ export abstract class OptionsBase<P extends IOptionsBaseProperties, S extends IO
   public render() {
     return <div>
       <Dialog open={this.props.show} onClose={this.props.onClose}>
-      <form>
+        <form>
           <DialogTitle>{this.getDialogTitle()}</DialogTitle>
           <DialogContent>
             <TextField type="search" className={this.props.inputClass} fullWidth={true} label="Matching repos (e.g. ^ul)" value={this.state.repo} onChange={this.handleTextChange('repo')}/>

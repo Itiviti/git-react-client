@@ -19,6 +19,17 @@ import GrepOptions, { IGrepOptionsState } from './components/searchoptions/GrepO
 import SearchOptions, { ISearchOptionsState } from './components/searchoptions/SearchOptions';
 import { gitRestApi } from './settings';
 
+interface IOption {
+  repo?: string,
+  text?: string,
+  branch?: string,
+  path?: string,
+  layout?: string,
+  ignoreCase?: boolean,
+  redirect?: boolean,
+  mode?: string
+}
+
 interface IState {
   menuOpen: boolean,
   optionOpen: boolean,
@@ -26,16 +37,7 @@ interface IState {
   data?: any,
   pending?: boolean,
   filter?: string,
-  options?: {
-    repo?: string,
-    text?: string,
-    branch?: string,
-    path?: string,
-    layout?: string,
-    ignoreCase?: boolean,
-    redirect?: boolean,
-    mode?: string
-  }
+  options?: IOption
 }
 
 const drawerWidth = 240;
@@ -89,7 +91,7 @@ class App extends React.Component<IProps, IState> {
       data: [],
       filter: '',
       menuOpen: false,
-      optionOpen: this.isGitSearch() || !repo,
+      optionOpen: !repo,
       options: {
         branch: query.branch as string || query.ref as string,
         ignoreCase: query.ignoreCase && query.ignoreCase === "true" ? true : false,
@@ -187,13 +189,18 @@ class App extends React.Component<IProps, IState> {
   }
 
   public componentDidMount() {
-    if (!this.isGitSearch() && this.state.options && this.state.options.repo) {
+    if (!this.state.options || !this.state.options.repo) {
+      return;
+    }
+    if (!this.isGitSearch()) {
       this.loadGrepFromServer(this.state.options);
+    } else {
+      this.loadSearchFromServer(this.state.options);
     }
   }
 
   public renderParams() {
-    if (this.state.options && this.state.options.repo) {
+    if (this.state.options && (this.state.options.repo || this.state.options.text)) {
       const baseStyle: CSSProperties = { display: 'inline-block', marginLeft: 13 };
       const boldStyle: CSSProperties = { ...baseStyle, fontWeight: "bold" };
 
@@ -232,8 +239,9 @@ class App extends React.Component<IProps, IState> {
     }
     if (isGitSearch) {
       return <SearchOptions { ...args } />
+    } else {
+      return <GrepOptions { ...args } />
     }
-    return <GrepOptions { ...args } />
   }
 
   private navigate(target: string): () => void {
@@ -272,10 +280,14 @@ class App extends React.Component<IProps, IState> {
 
   private onSearchOptionsValidate = (options: IGrepOptionsState | ISearchOptionsState) => {
     this.props.history.push(window.location.pathname + "?" + querystring.stringify(options));
-    this.loadGrepFromServer(options);
+    if (this.isGitSearch()) {
+      this.loadSearchFromServer(options);
+    } else {
+      this.loadGrepFromServer(options);
+    }
   }
 
-  private loadGrepFromServer(params: any) {
+  private loadSearchFromServer(params: IOption) {
     this.setState({
       ...this.state,
       data: [],
@@ -283,10 +295,57 @@ class App extends React.Component<IProps, IState> {
       options: params,
       pending: true,
     });
+
+    // parse text to find line_no and stuff
+    const txt = params.text!;
+    let match;
+    let line = 1;
+
+    let paths;
+    if (params.mode === SearchOptions.MODE_FILE) {
+      paths = [txt, `*/${txt}`]
+    } else {
+      // TODO: redirect to MS ref src
+      match = txt.match(/([\w\.\d]+):(\d+)/);
+      if (match) {
+        paths = [`*/${match[1]}`];
+        line = parseInt(match[2], 10);
+      } else {
+        match = txt.match(/([^.]+)\.[^.]+\(/);
+        if (match) {
+          paths = [`*/${match[1]}.*`];
+        } else {
+          match = txt.match(/(\w+)/);
+          if (match) {
+            paths = [`*/${match[1]}.*`];
+          } else {
+            return;
+          }
+        }
+      }
+    }
+
+    const pathsQuery = paths.map(p => `path=${p}`).join('&');
+    this.loadResult(`${gitRestApi()}/repo/${params.repo}/grep/${params.branch}?q=^&${pathsQuery}&target_line_no=${line}&delimiter=${'%0A%0A'}${params.ignoreCase?'&ignore_case=true':''}`);
+  }
+
+  private loadGrepFromServer(params: IOption) {
+    this.setState({
+      ...this.state,
+      data: [],
+      optionOpen: false,
+      options: params,
+      pending: true,
+    });
+
+    this.loadResult(`${gitRestApi()}/repo/${params.repo}/grep/${params.branch}?q=${params.text ? params.text : ''}&path=${params.path}&delimiter=${'%0A%0A'}${params.ignoreCase?'&ignore_case=true':''}`);
+  }
+
+  private loadResult(query: string) {
     const esc = fromEvent<{keyCode: number}>(document, 'keydown').pipe(
       filter(e => e.keyCode === 27)
     );
-    rxFlow(`${gitRestApi()}/repo/${params.repo}/grep/${params.branch}?q=${params.text ? params.text : ''}&path=${params.path}&delimiter=${'%0A%0A'}${params.ignoreCase?'&ignore_case=true':''}`, { withCredentials: false }).pipe(
+    rxFlow(query, { withCredentials: false }).pipe(
       bufferTime(500),
       takeUntil(merge(this.startQuery,esc)),
       finalize(() => this.setState({
