@@ -4,10 +4,12 @@ import { FormControl, FormControlLabel, InputLabel, MenuItem, Select, Switch } f
 import { IOptionsBaseProperties, IOptionsBaseState, OptionsBase } from './OptionsBase'
 
 export default class SearchOptions extends OptionsBase<IOptionsBaseProperties, ISearchOptionsState> {
+
   constructor(props: IOptionsBaseProperties) {
     super(props);
-    const query = this.props.query;
+    const query = this.props.query || {};
     this.state = {
+      ...this.state,
       mode: query.mode || SearchOptions.MODE_FILE,
       redirect: Boolean(this.getQueryParameter(query, 'false', 'redirect')),
     } as ISearchOptionsState;
@@ -22,8 +24,9 @@ export default class SearchOptions extends OptionsBase<IOptionsBaseProperties, I
 
   protected getPostFields(inputClass: string) {
     const state = this.state as ISearchOptionsState;
-    return <div>
-      <FormControl className={inputClass}>
+    return (
+    <div className={inputClass}>
+      <FormControl>
           <InputLabel htmlFor="search-mode">Search Mode</InputLabel>
           <Select
             value={state.mode}
@@ -39,7 +42,7 @@ export default class SearchOptions extends OptionsBase<IOptionsBaseProperties, I
           </Select>
         </FormControl>
       <br/>
-      <FormControlLabel className={inputClass}
+      <FormControlLabel
           control={
             <Switch
               checked={state.redirect}
@@ -51,7 +54,7 @@ export default class SearchOptions extends OptionsBase<IOptionsBaseProperties, I
           label="Auto redirect"
         />
       <br />
-    </div>
+    </div>);
   }
 
   private handleRedirectChange = (e:any, redirect: boolean) => super.setState({redirect} as ISearchOptionsState);
