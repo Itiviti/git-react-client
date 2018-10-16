@@ -127,7 +127,7 @@ class App extends React.Component<IProps, IState> {
         {({ height, isScrolling, onChildScroll, scrollTop }) => (
           <div className="App">
             {this.state.pending &&
-              <LinearProgress style={{ zIndex: 2000, width: '100%', top: 0, position: 'absolute' }} color='secondary' />
+              <LinearProgress style={{ zIndex: 2000, width: '100%', top: 0, position: 'fixed' }} color='secondary' />
             }
             <AppBar position="fixed" style={appBarStyle}>
               <Toolbar>
