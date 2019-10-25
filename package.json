@@ -3,20 +3,20 @@
   "version": "2.0.0",
   "license": "ISC",
   "dependencies": {
-    "@material-ui/core": "^3.1.2",
-    "@material-ui/icons": "^3.0.1",
-    "@types/react-router": "^4.0.31",
-    "@types/react-router-dom": "^4.3.1",
-    "@types/react-virtualized": "^9.18.7",
-    "jsonpipe": "^2.1.1",
-    "react": "^16.5.2",
-    "react-dom": "^16.5.2",
+    "@material-ui/core": "^3.9.3",
+    "@material-ui/icons": "^3.0.2",
+    "@types/react-router": "^4.4.5",
+    "@types/react-router-dom": "^4.3.5",
+    "@types/react-virtualized": "^9.21.5",
+    "jsonpipe": "^2.1.2",
+    "react": "^16.11.0",
+    "react-dom": "^16.11.0",
     "react-prism": "^4.3.2",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
     "react-scripts-ts": "3.1.0",
-    "react-virtualized": "^9.20.1",
-    "rxjs": "^6.3.3"
+    "react-virtualized": "^9.21.1",
+    "rxjs": "^6.5.3"
   },
   "scripts": {
     "start": "react-scripts-ts start",
@@ -25,11 +25,11 @@
     "eject": "react-scripts-ts eject"
   },
   "devDependencies": {
-    "@types/jest": "^23.3.2",
-    "@types/node": "^10.11.3",
-    "@types/react": "^16.4.14",
-    "@types/react-dom": "^16.0.8",
-    "typescript": "^3.1.1"
+    "@types/jest": "^23.3.14",
+    "@types/node": "^10.17.0",
+    "@types/react": "^16.9.11",
+    "@types/react-dom": "^16.9.3",
+    "typescript": "^3.6.4"
   },
   "homepage": "http://git-viewer.ullink.lan/reactgit/",
   "restApi": "http://git-viewer.ullink.lan:1337",
